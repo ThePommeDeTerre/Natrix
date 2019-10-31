@@ -1,7 +1,7 @@
 # Natrix
 
 ## Entrega
-O trabalho como um todo deve ser entregue na data final ().
+O trabalho como um todo deve ser entregue na data final (10/01/2020).
 
 A modalidade de entrega toma a forma de um **arquivo `tar` comprimido (nome.tgz)** em que nome é o identificador do grupo.
 
