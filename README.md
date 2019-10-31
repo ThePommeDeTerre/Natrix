@@ -70,11 +70,7 @@ type i_max = [10 .. maxint];
 ~~~
 Os intervalos só se aplicam a **valores positivos**.
 
-### Arrays
-~~~
-type arr = array i of i_max;
-~~~
-Quando não é referido o intervalo num vetor, este é declarado como tamanho 10 e o intervalo do índice é de 0 a 9.  
+Deve ser decidido se o intervalo incluí ou excluí os valores de extremos.
 
 ### Variáveis
 As variáveis da linguagem Natrix são mutáveis (_à la_ `C`), são explicitamente tipadas e necessariamente inicializadas.
@@ -84,10 +80,18 @@ var x : int = 5;
 
 var y : i_max = 10;
 
-var tab1 : array filled by 0;
+var tab1 : arr filled by 0;
 
 var tab2 : array 10 of int filled by 1;
 ~~~
+Quando não é especificado o intervalo dos índices, deve ser lançado um erro.
+
+No caso da linha 4, o `tab2` tem tamanho 10, sendo percorrido de 0 a 9.
+
+### Arrays
+~~~
+type arr = array i of i_max;
+~~~ 
 
 ### Atribuições e Expressões Numéricas
 As  expressões são as mesmas que a linguagem `arith` (ficha prática 1), apenas que, neste caso, a função `size` devolve o tamanho dos intervalos e dos vetores.
