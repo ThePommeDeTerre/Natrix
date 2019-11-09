@@ -18,6 +18,7 @@
     - [Exemplo:](#exemplo)
   - [Definição de Tipos](#defini%c3%a7%c3%a3o-de-tipos)
   - [Variáveis](#vari%c3%a1veis)
+    - [Arrays](#arrays-1)
     - [Atribuições e Expressões Numéricas](#atribui%c3%a7%c3%b5es-e-express%c3%b5es-num%c3%a9ricas)
   - [Instrução condicional clássica `if`](#instru%c3%a7%c3%a3o-condicional-cl%c3%a1ssica-if)
   - [Ciclos determinísticos](#ciclos-determin%c3%adsticos)
@@ -118,6 +119,7 @@ var a : array 10 of int filled by 1;
 ~~~
 type arr = array i of i_max;
 ~~~
+Deve ser decidido se o intervalo incluí ou excluí os valores de extremos.
 
 ## Variáveis
 As variáveis da linguagem Natrix são mutáveis (_à la_ `C`), são explicitamente tipadas e necessariamente inicializadas.
@@ -127,10 +129,18 @@ var x : int = 5;
 
 var y : i_max = 10;
 
-var tab1 : array filled by 0;
+var tab1 : arr filled by 0;
 
 var tab2 : array 10 of int filled by 1;
 ~~~
+Quando não é especificado o intervalo dos índices, deve ser lançado um erro.
+
+No caso da linha 4, o `tab2` tem tamanho 10, sendo percorrido de 0 a 9.
+
+### Arrays
+~~~
+type arr = array i of i_max;
+~~~ 
 
 > `type <nome> : <tipo> = <valor>`
 
