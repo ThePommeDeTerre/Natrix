@@ -1,0 +1,6 @@
+// utilizacao de variaveis locais fora do scope
+
+var x : int = 3
+x := let y = x + 1 in y * 4; 
+
+print(y)

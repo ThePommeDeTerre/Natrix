@@ -1,0 +1,11 @@
+// NOTA: Temos de decidir a estrutura das condicoes 'if',
+// mas por agora vamos assumir que 'else' e obrigatorio
+
+var x : int = 5
+
+if (42) then {
+    x := x + 1;
+}
+else {
+    x := x * 2;
+}

@@ -1,0 +1,5 @@
+// for itera apenas sobre um 
+
+foreach i in 2 do {
+    print(i)
+}

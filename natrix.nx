@@ -9,9 +9,10 @@
 // maxint e minint sao *constantes* que existem por omissao na linguagem
 
 // a palavra chave type introduz definicao de tipos (com respectivo nome)
-// por exdmplo intervalos sao introduzidos desta forma
+// por exemplo intervalos sao introduzidos desta forma
 type i = [10 .. 20] ;
 type i_max =[10 .. maxint] ;
+
 // uma restricao: os intervalos sao sempre sobre *valores* positivos
 
 // podemos introduzir tipos de vectores desta forma
@@ -38,7 +39,8 @@ var tab2 : array 10 of int filled by 1 ;
 
 x := x + size(30..35) + size(tab1) ;
 
-tab[5] := let y = x + 3 in y * 5 ; // potencialmente da erro se o resultado esta fora do intervalo i_max
+// potencialmente da erro se o resultado esta fora do intervalo i_max
+tab[5] := let y = x + 3 in y * 5 ;
 
 // dispomos em natrix de uma instrucao print para mostrar valores numericos
 

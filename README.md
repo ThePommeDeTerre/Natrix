@@ -12,6 +12,7 @@
 - [Sintaxe](#sintaxe)
   - [Comentários](#coment%c3%a1rios)
   - [Constantes por Omissão na Linguagem](#constantes-por-omiss%c3%a3o-na-linguagem)
+  - [Funções por Omissão na Linguagem](#fun%c3%a7%c3%b5es-por-omiss%c3%a3o-na-linguagem)
   - [Definição de Intervalos](#defini%c3%a7%c3%a3o-de-intervalos)
   - [Arrays](#arrays)
     - [Exemplo:](#exemplo)
@@ -79,13 +80,18 @@ Geração de Código:
 ~~~
 
 ## Constantes por Omissão na Linguagem
-~~~
-maxint -> valor máximo de um inteiro
-minint -> valor mínimo de um inteiro
-~~~
+
+* `maxint` -> valor máximo de um inteiro
+* `minint` -> valor mínimo de um inteiro
+
+
+## Funções por Omissão na Linguagem
+* `size(a)` — recebe um array `a` e devolve o um inteiro com o tamanho do array; 
+* `print(v)` — imprime no ecrã a variável `v` (ver [Por Decidir](#por-decidir)).
+
 
 ## Definição de Intervalos
-A palavta chave `type` intruduz a definição de tipos (com o respetivo nome)
+A palavra chave `type` intruduz a definição de tipos (com o respetivo nome)
 ~~~
 type intervalo = [10 .. 20];
 type i_max = [10 .. maxint];
@@ -192,11 +198,33 @@ print(n1);
   * `bool`;
   * `char`;
   * `String`;
-  * Como consequência, vamos também ter:
+  * Nota: Como consequência, vamos também ter:
     * `array of bool`;
     * `array of char`;
     * `array of String`;
   
 * O comportamento da função `print`? Possiveis soluções:
   * `print` tem o mesmo comportamento que a função `print` de Python;
-  * Ou como em Ocaml, com funções diferentes para cada tipo (e.g. `print_int`, `print_string`, etc.).
+  * Ou como em OCaml, com funções diferentes para cada tipo (e.g. `print_int`, `print_string`, etc.).
+
+* As condições `if` são da forma:
+  * `if ... then ... else ...`, como em OCaml;
+    * Se optarmos por utilizar este `if`, é necessário que o ambos os casos tenham o mesmo tipo?
+  * Ou não precisam de ter `else`, como em C?
+
+* O tipo `bool` pode ser representado como:
+  *  1 ou 0;
+  *  Ou apenas como `true` ou `false`?
+  
+* Podemos definir funções? Se sim qual é a sintaxe?
+
+* Operadores que podemos adicionar:
+  * Concatenar strings;
+
+* Qual o que acontece se executar-mos: `x := maxint + 1`;
+
+* O intervalo `[100..0]` é válido?
+
+* Definimos `let ... in ...` como:
+  * `let x = e1 in e2`;
+  * Ou `let x : (tipo) = e1 in e2`

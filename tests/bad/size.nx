@@ -1,0 +1,2 @@
+// a função size é de tipo array -> int
+print( size(2) )

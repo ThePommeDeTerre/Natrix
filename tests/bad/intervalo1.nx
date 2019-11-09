@@ -1,0 +1,3 @@
+// intervalos apenas se aplicam a valores positivos
+
+print([-10..10]);

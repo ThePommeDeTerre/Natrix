@@ -1,0 +1,7 @@
+// i é sempre do tipo int
+
+var s : String = "hello"
+
+foreach i in 0..10 do {
+    s := i
+}

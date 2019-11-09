@@ -1,0 +1,3 @@
+// intervalos tem de ter pelo menos 1 elemento
+
+print([0..0])

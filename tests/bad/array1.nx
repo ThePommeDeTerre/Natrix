@@ -1,0 +1,6 @@
+// arrays de tamanho n, tem como primeiro indice 0 
+// e o ultimo n-1
+
+var a : array 10 of int filled by 0;
+ 
+print(a[10])

@@ -1,0 +1,4 @@
+// o x dentro do let in tem de ser do tipo string
+
+var x : int = 0;
+let x = "oi" in print(x+1);
