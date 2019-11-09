@@ -1,6 +1,29 @@
 # Natrix
 
-## Entrega
+## Índice
+- [Natrix](#natrix)
+  - [Índice](#%c3%8dndice)
+- [Entrega](#entrega)
+  - [_Deadlines_](#deadlines)
+    - [29/10/2019 — Exercício 1](#29102019--exerc%c3%adcio-1)
+    - [19/11/2019 — Exercícios 2, 3, 4 e 5](#19112019--exerc%c3%adcios-2-3-4-e-5)
+    - [10/12/2019 — Exercícios 6, 7 e 8](#10122019--exerc%c3%adcios-6-7-e-8)
+    - [Última Semana de Aulas — Exercício 9](#%c3%9altima-semana-de-aulas--exerc%c3%adcio-9)
+- [Sintaxe](#sintaxe)
+  - [Comentários](#coment%c3%a1rios)
+  - [Constantes por Omissão na Linguagem](#constantes-por-omiss%c3%a3o-na-linguagem)
+  - [Definição de Intervalos](#defini%c3%a7%c3%a3o-de-intervalos)
+  - [Arrays](#arrays)
+    - [Exemplo:](#exemplo)
+  - [Definição de Tipos](#defini%c3%a7%c3%a3o-de-tipos)
+  - [Variáveis](#vari%c3%a1veis)
+    - [Atribuições e Expressões Numéricas](#atribui%c3%a7%c3%b5es-e-express%c3%b5es-num%c3%a9ricas)
+  - [Instrução condicional clássica `if`](#instru%c3%a7%c3%a3o-condicional-cl%c3%a1ssica-if)
+  - [Ciclos determinísticos](#ciclos-determin%c3%adsticos)
+    - [Exemplos](#exemplos)
+- [Por Decidir](#por-decidir)
+
+# Entrega
 O trabalho como um todo deve ser entregue na data final (10/01/2020).
 
 A modalidade de entrega toma a forma de um **arquivo `tar` comprimido (nome.tgz)** em que nome é o identificador do grupo.
@@ -11,11 +34,9 @@ Este arquivo deverá igualmente conter o relatório qued escreve o trabalho feit
 
 É igualmente esperada que seja preparada uma apresentação para a respectiva defesa.
 
-
-
 ## _Deadlines_
 
-### 29/10/2019 - Exercício 1
+### 29/10/2019 — Exercício 1
 
 Programar Natrix:
 * **Programas de testes positivos**;
@@ -27,56 +48,72 @@ Programar Natrix:
   * Etc.
 
 
-### 19/11/2019 - Exercícios 2, 3, 4 e 5
+### 19/11/2019 — Exercícios 2, 3, 4 e 5
 
 Análise léxica, sintáctica e árvore de sintaxe abstracta:
 * **Gramática**;
-* **_Parsing_ e _Lexing_** - Os analisadores construídos deverão ter em conta uma gestão apropriada dos erros que possam surgir (por enquanto léxicos e sintácticos);
+* **_Parsing_ e _Lexing_** — Os analisadores construídos deverão ter em conta uma gestão apropriada dos erros que possam surgir (por enquanto léxicos e sintácticos);
 * **Árvore de sintaxe abstrata**;
-* **_Parsing_ _Lexing_ (_bis_)** - Modificar os analisadores léxicos e sintácticos por forma a que seja construída uma árvore de sintaxe abstracta no caso de uma análise bem sucedida.
+* **_Parsing_ _Lexing_ (_bis_)** — Modificar os analisadores léxicos e sintácticos por forma a que seja construída uma árvore de sintaxe abstracta no caso de uma análise bem sucedida.
 
 
-### 10/12/2019 - Exercícios 6, 7 e 8
+### 10/12/2019 — Exercícios 6, 7 e 8
 
 Análise Semântica:
-* **Semântica Operacional** - Defina uma semântica operacional para o subconjunto básico da linguagem Natrix(sem os tipos intervalo, por exemplo). É deixado a nosso critério a definição deste subconjunto. É no entanto necessário comunicar ao doente a escolha;
-* **Semântica Operacional (opcional)** - Integre nasemântica definida no exercício anterior o resto dalinguagem Natrix;
+* **Semântica Operacional** — Defina uma semântica operacional para o subconjunto básico da linguagem Natrix(sem os tipos intervalo, por exemplo). É deixado a nosso critério a definição deste subconjunto. É no entanto necessário comunicar ao doente a escolha;
+* **Semântica Operacional (opcional)** — Integre na semântica definida no exercício anterior o resto dalinguagem Natrix;
 * **Interpretador**;
 
 
-### Última Semana de Aulas - Exercício 9
+### Última Semana de Aulas — Exercício 9
 
 Geração de Código:
-* **Compilador** - o gerador de código para o maior núcleopossível da linguagem Natrix.
+* **Compilador** — o gerador de código para o maior núcleo possível da linguagem Natrix.
 
 
-## Sintaxe
+# Sintaxe
 
-### Comentários
+## Comentários
 ~~~
 // isto é claramente um comentário em Natrix
 ~~~
 
-### Constantes por omissão na linguagem
+## Constantes por Omissão na Linguagem
 ~~~
 maxint -> valor máximo de um inteiro
 minint -> valor mínimo de um inteiro
 ~~~
 
-### Definição de intervalos
+## Definição de Intervalos
+A palavta chave `type` intruduz a definição de tipos (com o respetivo nome)
 ~~~
 type intervalo = [10 .. 20];
 type i_max = [10 .. maxint];
 ~~~
 Os intervalos só se aplicam a **valores positivos**.
 
-### Arrays
+## Arrays
+Quando não é referido o intervalo num vetor, este é declarado como tamanho 10 e o intervalo do índice é de 0 a 9.  
+
+São declarados da seguinte forma:
+
+```
+type <nome> : array <tamanho> of <tipo> filled by <valor inicial>`
+```
+Onde:
+* **Tamanho** é um valor inteiro;
+* **Valor inicial** é um valor do mesmo tipo atribuido ao vetor
+
+### Exemplo:
+var a : array 10 of int filled by 1;
+
+
+## Definição de Tipos
 ~~~
 type arr = array i of i_max;
 ~~~
-Quando não é referido o intervalo num vetor, este é declarado como tamanho 10 e o intervalo do índice é de 0 a 9.  
 
-### Variáveis
+## Variáveis
 As variáveis da linguagem Natrix são mutáveis (_à la_ `C`), são explicitamente tipadas e necessariamente inicializadas.
 
 ~~~
@@ -89,27 +126,29 @@ var tab1 : array filled by 0;
 var tab2 : array 10 of int filled by 1;
 ~~~
 
+> `type <nome> : <tipo> = <valor>`
+
 ### Atribuições e Expressões Numéricas
 As  expressões são as mesmas que a linguagem `arith` (ficha prática 1), apenas que, neste caso, a função `size` devolve o tamanho dos intervalos e dos vetores.
 
 ~~~
 x := x + size(30 .. 35) + size (tab1);
 
+// potencial erro, caso o resultado esteja fora do intervalo i_max
 tab[5] := let y = x + 3 in y * 5;
-// potencial erro, caso o resultado esteja fora do intervalor i_max
 
-print (x + 1);
 // instrução para mostrar valores numéricos
+print (x + 1);
 ~~~
 
-* Instrução condicional clássica `if`
+## Instrução condicional clássica `if`
   ~~~
   if (x > 7) then { y:= y + 1; }
              else { y := y + 2; }
   ~~~
     As condições seguem as intruções padrões clássicos de = , != , < , <= , > , >= , & , | .  
 
-* Ciclos determinísticos
+## Ciclos determinísticos
 ~~~
 foreach i in 1..19 do { 
     x := x + i; 
@@ -147,3 +186,17 @@ foreach i in t do {
 
 print(n1);
 ~~~
+
+# Por Decidir
+* Que tipos vamos inserir? Sugestão:
+  * `bool`;
+  * `char`;
+  * `String`;
+  * Como consequência, vamos também ter:
+    * `array of bool`;
+    * `array of char`;
+    * `array of String`;
+  
+* O comportamento da função `print`? Possiveis soluções:
+  * `print` tem o mesmo comportamento que a função `print` de Python;
+  * Ou como em Ocaml, com funções diferentes para cada tipo (e.g. `print_int`, `print_string`, etc.).
