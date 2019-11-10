@@ -1,0 +1,4 @@
+// verificar igualdade de inteiros
+print(1=2);
+
+// Resultado: false

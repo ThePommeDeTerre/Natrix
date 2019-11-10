@@ -1,0 +1,11 @@
+// avaliar um inteiro declarado com `if`
+
+var x : int = 1;
+var y : int = 3;
+
+if (x > 0) then {y := y * 2;}
+           else {y := y + 1;}
+
+print(y);
+
+// Resultado: 6

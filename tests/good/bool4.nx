@@ -1,0 +1,4 @@
+// verificar a condicao "ou" com os comparadores ">" e "<"
+print(5>6 | 1<2)
+
+// Resultado: false
