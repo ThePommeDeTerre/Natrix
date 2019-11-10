@@ -99,6 +99,7 @@ type i_max = [10 .. maxint];
 ~~~
 Os intervalos só se aplicam a **valores positivos**.
 
+<<<<<<< Updated upstream
 ## Arrays
 Quando não é referido o intervalo num vetor, este é declarado como tamanho 10 e o intervalo do índice é de 0 a 9.  
 
@@ -119,6 +120,8 @@ var a : array 10 of int filled by 1;
 ~~~
 type arr = array i of i_max;
 ~~~
+=======
+>>>>>>> Stashed changes
 Deve ser decidido se o intervalo incluí ou excluí os valores de extremos.
 
 ## Variáveis
@@ -141,8 +144,11 @@ No caso da linha 4, o `tab2` tem tamanho 10, sendo percorrido de 0 a 9.
 ~~~
 type arr = array i of i_max;
 ~~~ 
+<<<<<<< Updated upstream
 
 > `type <nome> : <tipo> = <valor>`
+=======
+>>>>>>> Stashed changes
 
 ### Atribuições e Expressões Numéricas
 As  expressões são as mesmas que a linguagem `arith` (ficha prática 1), apenas que, neste caso, a função `size` devolve o tamanho dos intervalos e dos vetores.
