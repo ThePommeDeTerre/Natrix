@@ -1,0 +1,7 @@
+// verifica se a declaracao de variaveis funciona
+
+var n : int = 21;
+
+print (n);
+
+// Resultado: 21

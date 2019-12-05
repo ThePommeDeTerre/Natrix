@@ -1,0 +1,4 @@
+// verificar menor do que... (para inteiros)
+print(10<11);
+
+// Resultado: true
