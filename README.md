@@ -221,10 +221,6 @@ print(n1);
   * `if ... then ... else ...`, como em OCaml;
     * Se optarmos por utilizar este `if`, é necessário que o ambos os casos tenham o mesmo tipo?
   * Ou não precisam de ter `else`, como em C?
-
-* O tipo `bool` pode ser representado como:
-  *  1 ou 0;
-  *  Ou apenas como `true` ou `false`?
   
 * Podemos definir funções? Se sim qual é a sintaxe?
 
