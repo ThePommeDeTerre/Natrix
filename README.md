@@ -15,7 +15,7 @@
   - [Funções por Omissão na Linguagem](#fun%c3%a7%c3%b5es-por-omiss%c3%a3o-na-linguagem)
   - [Definição de Intervalos](#defini%c3%a7%c3%a3o-de-intervalos)
   - [Arrays](#arrays)
-    - [Exemplo:](#exemplo)
+    - [Exemplo](#exemplo)
   - [Definição de Tipos](#defini%c3%a7%c3%a3o-de-tipos)
   - [Variáveis](#vari%c3%a1veis)
     - [Arrays](#arrays-1)
@@ -23,7 +23,14 @@
   - [Instrução condicional clássica `if`](#instru%c3%a7%c3%a3o-condicional-cl%c3%a1ssica-if)
   - [Ciclos determinísticos](#ciclos-determin%c3%adsticos)
     - [Exemplos](#exemplos)
+- [_Lexer_](#lexer)
+  - [Expressões Regulares Auxiliares](#express%c3%b5es-regulares-auxiliares)
+  - [Palavras Chave](#palavras-chave)
+  - [_Tokens_](#tokens)
 - [Por Decidir](#por-decidir)
+- [Referências](#refer%c3%aancias)
+
+---
 
 # Entrega
 O trabalho como um todo deve ser entregue na data final (10/01/2020).
@@ -99,7 +106,6 @@ type i_max = [10 .. maxint];
 ~~~
 Os intervalos só se aplicam a **valores positivos**.
 
-<<<<<<< Updated upstream
 ## Arrays
 Quando não é referido o intervalo num vetor, este é declarado como tamanho 10 e o intervalo do índice é de 0 a 9.  
 
@@ -112,17 +118,18 @@ Onde:
 * **Tamanho** é um valor inteiro;
 * **Valor inicial** é um valor do mesmo tipo atribuido ao vetor
 
-### Exemplo:
+### Exemplo
 var a : array 10 of int filled by 1;
 
 
 ## Definição de Tipos
+
 ~~~
 type arr = array i of i_max;
 ~~~
-=======
->>>>>>> Stashed changes
+
 Deve ser decidido se o intervalo incluí ou excluí os valores de extremos.
+
 
 ## Variáveis
 As variáveis da linguagem Natrix são mutáveis (_à la_ `C`), são explicitamente tipadas e necessariamente inicializadas.
@@ -136,19 +143,16 @@ var tab1 : arr filled by 0;
 
 var tab2 : array 10 of int filled by 1;
 ~~~
+
 Quando não é especificado o intervalo dos índices, deve ser lançado um erro.
 
 No caso da linha 4, o `tab2` tem tamanho 10, sendo percorrido de 0 a 9.
 
 ### Arrays
+
 ~~~
 type arr = array i of i_max;
 ~~~ 
-<<<<<<< Updated upstream
-
-> `type <nome> : <tipo> = <valor>`
-=======
->>>>>>> Stashed changes
 
 ### Atribuições e Expressões Numéricas
 As  expressões são as mesmas que a linguagem `arith` (ficha prática 1), apenas que, neste caso, a função `size` devolve o tamanho dos intervalos e dos vetores.
@@ -163,14 +167,18 @@ tab[5] := let y = x + 3 in y * 5;
 print (x + 1);
 ~~~
 
+
 ## Instrução condicional clássica `if`
-  ~~~
-  if (x > 7) then { y:= y + 1; }
-             else { y := y + 2; }
-  ~~~
-    As condições seguem as intruções padrões clássicos de = , != , < , <= , > , >= , & , | .  
+As condições seguem as intruções padrões clássicos de = , != , < , <= , > , >= , & , | .  
+
+~~~
+if (x > 7) then { y:= y + 1; }
+           else { y := y + 2; }
+~~~
+
 
 ## Ciclos determinísticos
+
 ~~~
 foreach i in 1..19 do { 
     x := x + i; 
@@ -209,6 +217,99 @@ foreach i in t do {
 print(n1);
 ~~~
 
+# _Lexer_
+Esta seção contém informação relevante ao _lexer_ da linguagem Natrix. Aqui serão apresentados todos os lexemas e palavras chaves da linguagem. 
+
+## Expressões Regulares Auxiliares
+
+Uma **letra** é definida como:
+$$
+letter = (a|b|c| ... |z|A|B|C|...|Z)
+$$
+
+Um **digíto** e definido da seguinte forma:
+$$
+digit = (0|1|...|9)
+$$
+
+Um **identificador** pode ser qualquer combinação de letra ou digíto, começando sempre por uma letra, sendo representado pela seguinte expressão regular:
+
+$$
+ident = letter.(letter | digit)^{*}
+$$
+
+Um inteiro é uma sequência digitos que deve conter pelo menos um número:
+
+$$
+  integer = digit^{+}
+$$
+
+Por fim, caracteres brancos serão espaços ou tabulações:
+
+$$
+  space = ( espaço | tab)
+$$
+
+## Palavras Chave
+
+  _Input_ |  Palavras chave
+:---------:|:---------- 
+def       | DEF
+if        | IF
+then      | THEN
+else      | ELSE
+print     | PRINT
+foreach   | FOR
+in        | IN
+do        | DO
+type      | TYPE
+var       | VAR
+of        | OF
+arry      | ARRAY
+filled    | FILLED
+by        | BY
+let       | LET
+size      | SIZE
+true      | CONST(Cbool true)
+false     | CONST(Cbool false)
+
+
+## _Tokens_ 
+Na seguinte tabela são listados todos os lexemas definidos.
+  _Input_   |  Lexema
+:----------:|:-----------------------|
+  \n        | `new_line`
+  \//       | `new_line`, próximo _token_
+  EOF       | EOF
+  ;         | SCOL
+`space`     | next_token
+`ident`     | palavra chave ou identificador
+  (         | LP
+  )         | RP
+  [         | SLB
+  ]         | SRB
+  {         | LB
+  }         | RB
+  :         | COL
+  :=        | SET
+  =         | EQ
+  ==        | CMP eq
+  !=        | CMP neq
+  <         | CMP lt
+  >         | CMP gt
+  <=        | CMP leq
+  >=        | CMP geq
+  &         | AND
+  \|        | OR
+  +         | PLUS
+  -         | SUB
+  *         | MUL
+  /         | DIV
+  ,         | COM
+  ..        | RANGE
+
+Caso seja lido um lexema não reconhecido na tabela em cima, será levantada uma exceção.
+
 # Por Decidir
 * Que tipos vamos inserir? Sugestão:
   * `bool`;
@@ -223,11 +324,6 @@ print(n1);
   * `print` tem o mesmo comportamento que a função `print` de Python;
   * Ou como em OCaml, com funções diferentes para cada tipo (e.g. `print_int`, `print_string`, etc.).
 
-* As condições `if` são da forma:
-  * `if ... then ... else ...`, como em OCaml;
-    * Se optarmos por utilizar este `if`, é necessário que o ambos os casos tenham o mesmo tipo?
-  * Ou não precisam de ter `else`, como em C?
-  
 * Podemos definir funções? Se sim qual é a sintaxe?
 
 * Operadores que podemos adicionar:
@@ -240,3 +336,7 @@ print(n1);
 * Definimos `let ... in ...` como:
   * `let x = e1 in e2`;
   * Ou `let x : (tipo) = e1 in e2`
+
+# Referências
+* https://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html;
+* https://v1.realworldocaml.org/v1/en/html/parsing-with-ocamllex-and-menhir.html;
