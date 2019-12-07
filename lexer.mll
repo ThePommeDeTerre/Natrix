@@ -4,8 +4,7 @@
 
   exception Lexing_error of string
 
-  let kwd_tbl = 
-  [
+  let kwd_tbl = [
     "def", DEF;
     "if", IF;
     "then", THEN;
@@ -38,9 +37,6 @@
 let letter = ['a' - 'z' 'A' - 'Z']
 let digit = ['0' - '9']
 
-(* TODO:
-  Definir booleanos
- *)
 let ident = letter(letter | digit)*
 let integer = digit+
 let space = [' ' '\t']
