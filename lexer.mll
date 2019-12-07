@@ -1,3 +1,5 @@
+(* Lexer para Natrix*)
+
 {
   open Lexing
   open Parser
@@ -5,24 +7,24 @@
   exception Lexing_error of string
 
   let kwd_tbl = [
-    "def", DEF;
-    "if", IF;
-    "then", THEN;
-    "else", ELSE;
-    "print", PRINT;
+    "def",     DEF;
+    "if",      IF;
+    "then",    THEN;
+    "else",    ELSE;
+    "print",   PRINT;
     "foreach", FOR;
-    "in", IN;
-    "do", DO;
-    "type", TYPE;
-    "var", VAR;
-    "of", OF;
-    "arry", ARRAY;
-    "filled", FILLED; 
-    "by", BY;
-    "let", LET;
-    "size", SIZE;
-    "true", CONST(Cbool true);
-    "false", CONST(Cbool false)
+    "in",      IN;
+    "do",      DO;
+    "type",    TYPE;
+    "var",     VAR;
+    "of",      OF;
+    "arry",    ARRAY;
+    "filled",  FILLED;
+    "by",      BY;
+    "let",     LET;
+    "size",    SIZE;
+    "true",    CONST (Cbool true);
+    "false",   CONST (Cbool false)
   ]
 
   exception Lexing_error of char
@@ -36,40 +38,41 @@
 
 let letter = ['a' - 'z' 'A' - 'Z']
 let digit = ['0' - '9']
+let space = [' ' '\t']
 
 let ident = letter(letter | digit)*
 let integer = digit+
-let space = [' ' '\t']
 
 rule token = parse
-| '\n' {newline lexbuf; token lexbuf}
-| "//" [^'\n']+ {newline lexbuf; token lexbuf}
-| space+ {token lexbuf}
-| ident as id {kwd_or_id}
-| ';'
-| ".."
-| ','
-| ':'
-| ":="
-| '('
-| ')'
-| '{'
-| '}'
-| '['
-| ']'
-| '+'
-| '-'
-| '/'
-| '='
-| '*'
-| "=="
-| "!="
-| "<"
-| "<="
-| ">"
-| ">="
-| '&'
-| '|'
-| integer as s {CONST (Cint int_of_string s)}
-| eof
-| _ as c {raise (Lexing_error c)}
+| '\n'          { newline lexbuf; token lexbuf }
+| "//" [^'\n']+ { newline lexbuf; token lexbuf }
+| space+        { token lexbuf }
+| ident as id   { kwd_or_id }
+| ';'           { SCOL }
+| ".."          { RANGE }
+| ','           { COM }
+| ':'           { COL }
+| ":="          { SET }
+| '('           { LP }  
+| ')'           { RP }
+| '{'           { LB }
+| '}'           { RB }
+| '['           { SLB }
+| ']'           { SRB }
+| '+'           { PLUS } 
+| '-'           { MINUS } 
+| '/'           { DIV }
+| '*'           { MUL }
+| '='           { EQ }
+| "=="          { CMP Beq }
+| "!="          { CMP Bneq }
+| "<"           { CMP Blt }
+| "<="          { CMP Bleq }
+| ">"           { CMP Bgt }
+| ">="          { CMP Bgeq }
+| '!'           { NOT }
+| '&'           { AND }
+| '|'           { OR }
+| integer as s  { CONST (Cint int_of_string s) }
+| eof           { EOF }
+| _ as c        {raise (Lexing_error c) }
