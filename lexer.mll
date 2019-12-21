@@ -4,42 +4,50 @@
   open Lexing
   open Parser
 
-  exception Lexing_error of string
+  exception Lexing_error of char
 
 
   (* 
-  TODO: guardar tabela de keywords numa hashtable *)
-  let kwd_tbl = [
+  TODO: guardar tabela de keywords numa hashtable 
+  *)
+
+  (* tokens nao utilizados:
     "def",     DEF;
+    "arry",    ARRAY;
+    "filled",  FILLED;
+    "type",    TYPE;
+    "do",      DO;
+    "of",      OF;
+    "by",      BY;
+    "size",    SIZE;
+    "foreach", FOR;
+| ".."          { RANGE }
+| ','           { COM }
+| '['           { SLB }
+| ']'           { SRB }
+
+    *)
+  let kwd_tbl = [
     "if",      IF;
     "then",    THEN;
     "else",    ELSE;
     "print",   PRINT;
-    "foreach", FOR;
     "in",      IN;
-    "do",      DO;
-    "type",    TYPE;
     "var",     VAR;
-    "of",      OF;
-    "arry",    ARRAY;
-    "filled",  FILLED;
-    "by",      BY;
     "let",     LET;
-    "size",    SIZE;
     "true",    CONST (Cbool true);
     "false",   CONST (Cbool false);
     "int", INT;
     "bool", BOOL
   ]
-
-  exception Lexing_error of char
-
+  
   let kwd_or_id s = 
   try List.assoc s kwd_tbl with _ -> IDENT s
 
   let newline lexbuf = 
     let pos = lexbuf.lex_curr_p in 
-    lexbuf.lex_curr_p <- {pos with pos_lnum = pos.pos_lnum  + 1; pos_bol = pos.pos_cnum}
+    lexbuf.lex_curr_p <- 
+      {pos with pos_lnum = pos.pos_lnum  + 1; pos_bol = pos.pos_cnum}
 }
 
 let letter = ['a' - 'z' 'A' - 'Z']
@@ -53,18 +61,14 @@ rule token = parse
 | '\n'          { newline lexbuf; token lexbuf }
 | "//" [^'\n']+ { newline lexbuf; token lexbuf }
 | space+        { token lexbuf }
-| ident as id   { kwd_or_id }
+| ident as id   { kwd_or_id id }
 | ';'           { SCOL }
-| ".."          { RANGE }
-| ','           { COM }
 | ':'           { COL }
 | ":="          { SET }
 | '('           { LP }  
 | ')'           { RP }
 | '{'           { LB }
 | '}'           { RB }
-| '['           { SLB }
-| ']'           { SRB }
 | '+'           { PLUS } 
 | '-'           { MINUS } 
 | '/'           { DIV }
@@ -79,6 +83,6 @@ rule token = parse
 | '!'           { NOT }
 | '&'           { AND }
 | '|'           { OR }
-| integer as s  { CONST (Cint int_of_string s) }
+| integer as s  { CONST (Cint (int_of_string s)) }
 | eof           { EOF }
 | _ as c        {raise (Lexing_error c) }

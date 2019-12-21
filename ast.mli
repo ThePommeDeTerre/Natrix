@@ -1,4 +1,5 @@
 
+
 (* tipo Identificadores *)
 type ident = string
 
@@ -24,16 +25,19 @@ type binop =
   | Band | Bor
   
 
-type program = def list * stmt list 
-and  def     = ident * ident list * stmt
+
+(* type program = def list * stmt list 
+and  def     = ident * ident list * stmt *)
 
 (* nota: este tipo esta ordenado por ordem de prioridade, 
   vamos tentar implementar cada um por esta ordem*)
+type program = stmt list
+
 and stmt = 
   | Svar     of ident * nType * expr
   | Sset     of ident * expr
   | Sprint   of expr
-  | Sif      of expr * stmt * stmt
+  | Sif      of expr * stmt list * stmt list
   | Sforeach of expr * stmt
   | Stype    of ident 
   
