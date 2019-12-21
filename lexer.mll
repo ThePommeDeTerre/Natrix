@@ -6,6 +6,9 @@
 
   exception Lexing_error of string
 
+
+  (* 
+  TODO: guardar tabela de keywords numa hashtable *)
   let kwd_tbl = [
     "def",     DEF;
     "if",      IF;
@@ -24,12 +27,15 @@
     "let",     LET;
     "size",    SIZE;
     "true",    CONST (Cbool true);
-    "false",   CONST (Cbool false)
+    "false",   CONST (Cbool false);
+    "int", INT;
+    "bool", BOOL
   ]
 
   exception Lexing_error of char
 
-  let kwd_or_id s = try List.assoc s kwd_tbl with _ -> IDENT s
+  let kwd_or_id s = 
+  try List.assoc s kwd_tbl with _ -> IDENT s
 
   let newline lexbuf = 
     let pos = lexbuf.lex_curr_p in 
