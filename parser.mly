@@ -11,9 +11,9 @@
 %token SLB SRB
 */
 
-%token IF THEN ELSE PRINT LET IN VAR SET 
-%token EQ SCOL COL NOT AND OR
-%token PLUS MINUS DIV MUL
+%token IF THEN ELSE PRINT LET IN VAR  
+%token SET EQ SCOL COL NOT AND OR 
+%token PLUS MINUS DIV MUL MOD
 %token INT BOOL
 %token EOF
 %token LP RP LB RB
@@ -25,6 +25,7 @@
 %nonassoc IN
 %nonassoc NOT
 %nonassoc CMP
+%left MOD
 %left PLUS 
 %left MINUS
 %left DIV 
@@ -87,6 +88,7 @@ expr:
 | MINUS { Bsub }
 | DIV   { Bdiv }
 | MUL   { Bmul }
+| MOD   { Bmod}
 | c=CMP {c}
 | AND   {Band}
 | OR    {Bor}

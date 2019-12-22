@@ -13,6 +13,7 @@ type token =
   | OR
   | NOT
   | MUL
+  | MOD
   | MINUS
   | LP
   | LET

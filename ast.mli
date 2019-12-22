@@ -20,7 +20,7 @@ type unop =
 
 (* Operadores binários *)
 type binop =
-  | Badd | Bsub | Bmul | Bdiv
+  | Badd | Bsub | Bmul | Bdiv | Bmod
   | Beq  | Bneq | Bgt | Blt | Bleq | Bgeq
   | Band | Bor
   

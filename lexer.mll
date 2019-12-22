@@ -32,6 +32,7 @@
     "then",    THEN;
     "else",    ELSE;
     "print",   PRINT;
+    "mod",     MOD;
     "in",      IN;
     "var",     VAR;
     "let",     LET;
@@ -40,7 +41,7 @@
     "int", INT;
     "bool", BOOL
   ]
-  
+
   let kwd_or_id s = 
   try List.assoc s kwd_tbl with _ -> IDENT s
 
