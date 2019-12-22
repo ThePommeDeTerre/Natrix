@@ -63,7 +63,7 @@ and expr env = function
   | Eunop  (op, e) -> unop op (expr env e)
     (* local *)
   | Elet (x, t, e1, e2) ->   
-  error "todo"
+  error "todo: let in"
 
 and binop op v1 v2 =
   match op, v1, v2 with

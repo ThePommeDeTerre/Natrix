@@ -30,6 +30,7 @@
 %left MINUS
 %left DIV 
 %left MUL
+%nonassoc uminus
 
 /* ponto de entrada da gramática */
 %start prog
@@ -78,7 +79,8 @@ expr:
 | c = CONST                    { Econst c }
 | id = IDENT                   { Eident id }
 | e1 = expr o = op e2 = expr   { Ebinop (o, e1, e2) }
-| NOT e = expr                 {Eunop (Uneg, e)} 
+| NOT e = expr                 { Eunop (Unot, e)} 
+| MINUS e = expr %prec uminus  { Eunop (Uneg, e) }
 | LET id = IDENT COL t = types EQ e1 = expr 
   IN e2 = expr                 {Elet (id, t, e1, e2)}
 ;

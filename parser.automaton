@@ -1,12 +1,12 @@
 State 0:
 prog' -> . prog [ # ]
 -- On VAR shift to state 1
--- On PRINT shift to state 38
--- On IF shift to state 43
--- On IDENT shift to state 47
--- On stmts shift to state 59
--- On stmt shift to state 57
--- On prog shift to state 61
+-- On PRINT shift to state 40
+-- On IF shift to state 45
+-- On IDENT shift to state 49
+-- On stmts shift to state 61
+-- On stmt shift to state 59
+-- On prog shift to state 63
 
 State 1:
 stmt -> VAR . IDENT COL types EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
@@ -37,46 +37,58 @@ stmt -> VAR IDENT COL types . EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
 State 7:
 stmt -> VAR IDENT COL types EQ . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 36
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 38
 
 State 8:
 expr -> NOT . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 35
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 37
 
 State 9:
-expr -> LET . IDENT COL types EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On IDENT shift to state 10
+expr -> MINUS . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On NOT shift to state 8
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 36
 
 State 10:
-expr -> LET IDENT . COL types EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On COL shift to state 11
+expr -> LET . IDENT COL types EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On IDENT shift to state 11
 
 State 11:
+expr -> LET IDENT . COL types EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On COL shift to state 12
+
+State 12:
 expr -> LET IDENT COL . types EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On INT shift to state 4
 -- On BOOL shift to state 5
--- On types shift to state 12
-
-State 12:
-expr -> LET IDENT COL types . EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On EQ shift to state 13
+-- On types shift to state 13
 
 State 13:
-expr -> LET IDENT COL types EQ . expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 16
+expr -> LET IDENT COL types . EQ expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On EQ shift to state 14
 
 State 14:
+expr -> LET IDENT COL types EQ . expr IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On NOT shift to state 8
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 17
+
+State 15:
 expr -> IDENT . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On THEN reduce production expr -> IDENT 
 -- On SCOL reduce production expr -> IDENT 
@@ -91,7 +103,7 @@ expr -> IDENT . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> IDENT 
 -- On AND reduce production expr -> IDENT 
 
-State 15:
+State 16:
 expr -> CONST . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On THEN reduce production expr -> CONST 
 -- On SCOL reduce production expr -> CONST 
@@ -106,7 +118,7 @@ expr -> CONST . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> CONST 
 -- On AND reduce production expr -> CONST 
 
-State 16:
+State 17:
 expr -> expr . PLUS expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -116,25 +128,26 @@ expr -> expr . CMP expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> LET IDENT COL types EQ expr . IN expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On IN shift to state 31
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On AND shift to state 33
-
-State 17:
-expr -> expr PLUS . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 18
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On IN shift to state 32
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On AND shift to state 34
 
 State 18:
+expr -> expr PLUS . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On NOT shift to state 8
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 19
+
+State 19:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr PLUS expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -144,9 +157,9 @@ expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On MUL shift to state 19
--- On MINUS shift to state 21
--- On DIV shift to state 23
+-- On MUL shift to state 20
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
 -- On THEN reduce production expr -> expr PLUS expr 
 -- On SCOL reduce production expr -> expr PLUS expr 
 -- On RP reduce production expr -> expr PLUS expr 
@@ -157,15 +170,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> expr PLUS expr 
 -- On AND reduce production expr -> expr PLUS expr 
 
-State 19:
+State 20:
 expr -> expr MUL . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 20
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 21
 
-State 20:
+State 21:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -188,15 +202,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> expr MUL expr 
 -- On AND reduce production expr -> expr MUL expr 
 
-State 21:
+State 22:
 expr -> expr MINUS . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 22
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 23
 
-State 22:
+State 23:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr MINUS expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -206,8 +221,8 @@ expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On MUL shift to state 19
--- On DIV shift to state 23
+-- On MUL shift to state 20
+-- On DIV shift to state 24
 -- On THEN reduce production expr -> expr MINUS expr 
 -- On SCOL reduce production expr -> expr MINUS expr 
 -- On RP reduce production expr -> expr MINUS expr 
@@ -219,15 +234,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> expr MINUS expr 
 -- On AND reduce production expr -> expr MINUS expr 
 
-State 23:
+State 24:
 expr -> expr DIV . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 24
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 25
 
-State 24:
+State 25:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -237,7 +253,7 @@ expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On MUL shift to state 19
+-- On MUL shift to state 20
 -- On THEN reduce production expr -> expr DIV expr 
 -- On SCOL reduce production expr -> expr DIV expr 
 -- On RP reduce production expr -> expr DIV expr 
@@ -250,15 +266,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> expr DIV expr 
 -- On AND reduce production expr -> expr DIV expr 
 
-State 25:
+State 26:
 expr -> expr OR . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 26
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 27
 
-State 26:
+State 27:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -268,12 +285,12 @@ expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr OR expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
+-- On PLUS shift to state 18
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
 -- On THEN reduce production expr -> expr OR expr 
 -- On SCOL reduce production expr -> expr OR expr 
 -- On RP reduce production expr -> expr OR expr 
@@ -281,15 +298,16 @@ expr -> expr OR expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On IN reduce production expr -> expr OR expr 
 -- On AND reduce production expr -> expr OR expr 
 
-State 27:
+State 28:
 expr -> expr MOD . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 28
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 29
 
-State 28:
+State 29:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -299,10 +317,10 @@ expr -> expr MOD expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On MUL shift to state 19
--- On MINUS shift to state 21
--- On DIV shift to state 23
+-- On PLUS shift to state 18
+-- On MUL shift to state 20
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
 -- On THEN reduce production expr -> expr MOD expr 
 -- On SCOL reduce production expr -> expr MOD expr 
 -- On RP reduce production expr -> expr MOD expr 
@@ -312,15 +330,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On CMP reduce production expr -> expr MOD expr 
 -- On AND reduce production expr -> expr MOD expr 
 
-State 29:
+State 30:
 expr -> expr CMP . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 30
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 31
 
-State 30:
+State 31:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -330,11 +349,11 @@ expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr CMP expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
+-- On PLUS shift to state 18
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
 -- On THEN reduce production expr -> expr CMP expr 
 -- On SCOL reduce production expr -> expr CMP expr 
 -- On RP reduce production expr -> expr CMP expr 
@@ -342,15 +361,16 @@ expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On IN reduce production expr -> expr CMP expr 
 -- On AND reduce production expr -> expr CMP expr 
 
-State 31:
+State 32:
 expr -> LET IDENT COL types EQ expr IN . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 32
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 33
 
-State 32:
+State 33:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -360,12 +380,12 @@ expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> LET IDENT COL types EQ expr IN expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
+-- On PLUS shift to state 18
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
 -- On THEN reduce production expr -> LET IDENT COL types EQ expr IN expr 
 -- On SCOL reduce production expr -> LET IDENT COL types EQ expr IN expr 
 -- On RP reduce production expr -> LET IDENT COL types EQ expr IN expr 
@@ -373,36 +393,14 @@ expr -> LET IDENT COL types EQ expr IN expr . [ THEN SCOL RP PLUS OR MUL MOD MIN
 -- On IN reduce production expr -> LET IDENT COL types EQ expr IN expr 
 -- On AND reduce production expr -> LET IDENT COL types EQ expr IN expr 
 
-State 33:
+State 34:
 expr -> expr AND . expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 34
-
-State 34:
-expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . MUL expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr AND expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
-expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On THEN reduce production expr -> expr AND expr 
--- On SCOL reduce production expr -> expr AND expr 
--- On RP reduce production expr -> expr AND expr 
--- On IN reduce production expr -> expr AND expr 
--- On AND reduce production expr -> expr AND expr 
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 35
 
 State 35:
 expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
@@ -412,14 +410,60 @@ expr -> expr . MUL expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr AND expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On THEN reduce production expr -> expr AND expr 
+-- On SCOL reduce production expr -> expr AND expr 
+-- On RP reduce production expr -> expr AND expr 
+-- On IN reduce production expr -> expr AND expr 
+-- On AND reduce production expr -> expr AND expr 
+
+State 36:
+expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MUL expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> MINUS expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+-- On THEN reduce production expr -> MINUS expr 
+-- On SCOL reduce production expr -> MINUS expr 
+-- On RP reduce production expr -> MINUS expr 
+-- On PLUS reduce production expr -> MINUS expr 
+-- On OR reduce production expr -> MINUS expr 
+-- On MUL reduce production expr -> MINUS expr 
+-- On MOD reduce production expr -> MINUS expr 
+-- On MINUS reduce production expr -> MINUS expr 
+-- On IN reduce production expr -> MINUS expr 
+-- On DIV reduce production expr -> MINUS expr 
+-- On CMP reduce production expr -> MINUS expr 
+-- On AND reduce production expr -> MINUS expr 
+
+State 37:
+expr -> expr . PLUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MINUS expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . DIV expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MUL expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . MOD expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . CMP expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
+expr -> expr . AND expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> expr . OR expr [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 expr -> NOT expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
--- On PLUS shift to state 17
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
+-- On PLUS shift to state 18
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
 -- On THEN reduce production expr -> NOT expr 
 -- On SCOL reduce production expr -> NOT expr 
 -- On RP reduce production expr -> NOT expr 
@@ -427,7 +471,7 @@ expr -> NOT expr . [ THEN SCOL RP PLUS OR MUL MOD MINUS IN DIV CMP AND ]
 -- On IN reduce production expr -> NOT expr 
 -- On AND reduce production expr -> NOT expr 
 
-State 36:
+State 38:
 expr -> expr . PLUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . MINUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . DIV expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
@@ -437,17 +481,17 @@ expr -> expr . CMP expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 stmt -> VAR IDENT COL types EQ expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SCOL shift to state 37
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On AND shift to state 33
+-- On SCOL shift to state 39
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On AND shift to state 34
 
-State 37:
+State 39:
 stmt -> VAR IDENT COL types EQ expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On VAR reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On RB reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
@@ -456,19 +500,20 @@ stmt -> VAR IDENT COL types EQ expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On IDENT reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On EOF reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 
-State 38:
+State 40:
 stmt -> PRINT . LP expr RP SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On LP shift to state 39
+-- On LP shift to state 41
 
-State 39:
+State 41:
 stmt -> PRINT LP . expr RP SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 40
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 42
 
-State 40:
+State 42:
 expr -> expr . PLUS expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . MINUS expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . DIV expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
@@ -478,21 +523,21 @@ expr -> expr . CMP expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 stmt -> PRINT LP expr . RP SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On RP shift to state 41
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On AND shift to state 33
+-- On RP shift to state 43
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On AND shift to state 34
 
-State 41:
+State 43:
 stmt -> PRINT LP expr RP . SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SCOL shift to state 42
+-- On SCOL shift to state 44
 
-State 42:
+State 44:
 stmt -> PRINT LP expr RP SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On VAR reduce production stmt -> PRINT LP expr RP SCOL 
 -- On RB reduce production stmt -> PRINT LP expr RP SCOL 
@@ -501,15 +546,16 @@ stmt -> PRINT LP expr RP SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On IDENT reduce production stmt -> PRINT LP expr RP SCOL 
 -- On EOF reduce production stmt -> PRINT LP expr RP SCOL 
 
-State 43:
+State 45:
 stmt -> IF . expr THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
 -- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 44
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 46
 
-State 44:
+State 46:
 expr -> expr . PLUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . MINUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . DIV expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
@@ -519,42 +565,43 @@ expr -> expr . CMP expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
 stmt -> IF expr . THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On THEN shift to state 45
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On AND shift to state 33
-
-State 45:
-stmt -> IF expr THEN . LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On LB shift to state 46
-
-State 46:
-stmt -> IF expr THEN LB . stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On VAR shift to state 1
--- On PRINT shift to state 38
--- On IF shift to state 43
--- On IDENT shift to state 47
--- On stmts shift to state 51
--- On stmt shift to state 57
+-- On THEN shift to state 47
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On AND shift to state 34
 
 State 47:
-stmt -> IDENT . SET expr SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SET shift to state 48
+stmt -> IF expr THEN . LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On LB shift to state 48
 
 State 48:
-stmt -> IDENT SET . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On NOT shift to state 8
--- On LET shift to state 9
--- On IDENT shift to state 14
--- On CONST shift to state 15
--- On expr shift to state 49
+stmt -> IF expr THEN LB . stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On VAR shift to state 1
+-- On PRINT shift to state 40
+-- On IF shift to state 45
+-- On IDENT shift to state 49
+-- On stmts shift to state 53
+-- On stmt shift to state 59
 
 State 49:
+stmt -> IDENT . SET expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+-- On SET shift to state 50
+
+State 50:
+stmt -> IDENT SET . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+-- On NOT shift to state 8
+-- On MINUS shift to state 9
+-- On LET shift to state 10
+-- On IDENT shift to state 15
+-- On CONST shift to state 16
+-- On expr shift to state 51
+
+State 51:
 expr -> expr . PLUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . MINUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . DIV expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
@@ -564,17 +611,17 @@ expr -> expr . CMP expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 stmt -> IDENT SET expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SCOL shift to state 50
--- On PLUS shift to state 17
--- On OR shift to state 25
--- On MUL shift to state 19
--- On MOD shift to state 27
--- On MINUS shift to state 21
--- On DIV shift to state 23
--- On CMP shift to state 29
--- On AND shift to state 33
+-- On SCOL shift to state 52
+-- On PLUS shift to state 18
+-- On OR shift to state 26
+-- On MUL shift to state 20
+-- On MOD shift to state 28
+-- On MINUS shift to state 22
+-- On DIV shift to state 24
+-- On CMP shift to state 30
+-- On AND shift to state 34
 
-State 50:
+State 52:
 stmt -> IDENT SET expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On VAR reduce production stmt -> IDENT SET expr SCOL 
 -- On RB reduce production stmt -> IDENT SET expr SCOL 
@@ -583,32 +630,32 @@ stmt -> IDENT SET expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
 -- On IDENT reduce production stmt -> IDENT SET expr SCOL 
 -- On EOF reduce production stmt -> IDENT SET expr SCOL 
 
-State 51:
-stmt -> IF expr THEN LB stmts . RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On RB shift to state 52
-
-State 52:
-stmt -> IF expr THEN LB stmts RB . ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On ELSE shift to state 53
-
 State 53:
-stmt -> IF expr THEN LB stmts RB ELSE . LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On LB shift to state 54
+stmt -> IF expr THEN LB stmts . RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On RB shift to state 54
 
 State 54:
-stmt -> IF expr THEN LB stmts RB ELSE LB . stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On VAR shift to state 1
--- On PRINT shift to state 38
--- On IF shift to state 43
--- On IDENT shift to state 47
--- On stmts shift to state 55
--- On stmt shift to state 57
+stmt -> IF expr THEN LB stmts RB . ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On ELSE shift to state 55
 
 State 55:
-stmt -> IF expr THEN LB stmts RB ELSE LB stmts . RB [ VAR RB PRINT IF IDENT EOF ]
--- On RB shift to state 56
+stmt -> IF expr THEN LB stmts RB ELSE . LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On LB shift to state 56
 
 State 56:
+stmt -> IF expr THEN LB stmts RB ELSE LB . stmts RB [ VAR RB PRINT IF IDENT EOF ]
+-- On VAR shift to state 1
+-- On PRINT shift to state 40
+-- On IF shift to state 45
+-- On IDENT shift to state 49
+-- On stmts shift to state 57
+-- On stmt shift to state 59
+
+State 57:
+stmt -> IF expr THEN LB stmts RB ELSE LB stmts . RB [ VAR RB PRINT IF IDENT EOF ]
+-- On RB shift to state 58
+
+State 58:
 stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB . [ VAR RB PRINT IF IDENT EOF ]
 -- On VAR reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On RB reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
@@ -617,32 +664,32 @@ stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB . [ VAR RB PRINT IF IDENT EOF 
 -- On IDENT reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On EOF reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 
-State 57:
+State 59:
 stmts -> stmt . [ RB EOF ]
 stmts -> stmt . stmts [ RB EOF ]
 -- On VAR shift to state 1
--- On PRINT shift to state 38
--- On IF shift to state 43
--- On IDENT shift to state 47
--- On stmts shift to state 58
--- On stmt shift to state 57
+-- On PRINT shift to state 40
+-- On IF shift to state 45
+-- On IDENT shift to state 49
+-- On stmts shift to state 60
+-- On stmt shift to state 59
 -- On RB reduce production stmts -> stmt 
 -- On EOF reduce production stmts -> stmt 
 
-State 58:
+State 60:
 stmts -> stmt stmts . [ RB EOF ]
 -- On RB reduce production stmts -> stmt stmts 
 -- On EOF reduce production stmts -> stmt stmts 
 
-State 59:
+State 61:
 prog -> stmts . EOF [ # ]
--- On EOF shift to state 60
+-- On EOF shift to state 62
 
-State 60:
+State 62:
 prog -> stmts EOF . [ # ]
 -- On # reduce production prog -> stmts EOF 
 
-State 61:
+State 63:
 prog' -> prog . [ # ]
 -- On # accept prog
 

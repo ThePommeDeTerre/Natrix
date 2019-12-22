@@ -5,3 +5,11 @@ if x < 10 then {
 } else {
     print(10);
 }
+
+var y:int = 10;
+
+if x >= 15 then {
+    print(!true);
+} else {
+    print(-x);
+}
