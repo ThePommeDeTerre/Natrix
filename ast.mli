@@ -1,40 +1,7 @@
-
-
-(* tipo Identificadores *)
-type ident = string
-
-(* Constantes *)
-type constant = 
-  | Cbool of bool
-  | Cint of int
-
-(* Tipos *)
-type nType =
-  | Tint
-  | Tbool
-
-(* Operadores unários *)
-type unop =
-  | Uneg
-  | Unot
-
-(* Operadores binários *)
-type binop =
-  | Badd | Bsub | Bmul | Bdiv | Bmod
-  | Beq  | Bneq | Bgt | Blt | Bleq | Bgeq
-  | Band | Bor
-  
-
-
-(* type program = def list * stmt list 
-and  def     = ident * ident list * stmt *)
-
-(* nota: este tipo esta ordenado por ordem de prioridade, 
-  vamos tentar implementar cada um por esta ordem*)
 type program = stmt list
 
 and stmt = 
-  | Svar     of ident * nType * expr
+  | Svar     of ident * nxType * expr
   | Sset     of ident * expr
   | Sprint   of expr
   | Sif      of expr * stmt list * stmt list
@@ -46,5 +13,36 @@ and expr =
   | Eident of ident
   | Ebinop of binop * expr * expr
   | Eunop  of unop * expr 
-  | Elet   of ident * nType * expr * expr
+  | Elet   of ident * nxType * expr * expr
 
+(* tipo Identificadores *)
+and ident = string
+
+(* Tipos *)
+and nxType =
+  | Tint
+  | Tbool
+
+(* Constantes *)
+and constant = 
+  | Cbool of bool
+  | Cint of int
+
+(* Operadores unários *)
+and unop =
+  | Uneg
+  | Unot
+
+(* Operadores binários *)
+and binop =
+  | Badd | Bsub | Bmul | Bdiv | Bmod
+  | Beq  | Bneq | Bgt | Blt | Bleq | Bgeq
+  | Band | Bor
+  
+
+
+(* type program = def list * stmt list 
+and  def     = ident * ident list * stmt *)
+
+(* nota: este tipo esta ordenado por ordem de prioridade, 
+  vamos tentar implementar cada um por esta ordem*)

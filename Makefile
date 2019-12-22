@@ -1,10 +1,9 @@
-CMO=lexer.cmo parser.cmo main.cmo
+CMO=lexer.cmo parser.cmo interp.cmo main.cmo
 GENERATED = lexer.ml parser.ml parser.mli
 BIN=natrix
 FLAGS=
 
 all: $(BIN)
-	./$(BIN) 1.nx
 	
 $(BIN):$(CMO)
 	ocamlc $(FLAGS) -o $(BIN) $(CMO)

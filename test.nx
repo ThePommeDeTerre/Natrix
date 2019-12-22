@@ -1,0 +1,7 @@
+var x:int = 12;
+
+if x < 10 then {
+    print(1);
+} else {
+    print(10);
+}

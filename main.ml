@@ -1,73 +1,29 @@
-open Lexing
 open Ast
 open Format
+open Lexing
+open Interp
+
 
 let parse_only = ref true
+let interp = ref true
 
 let inFile  = ref ""
 let outFile = ref ""
 
 let set_file f s = f := s
 
-
+(* opções do natrix que são mostradas ao invocar 'natrix --help' *)
 let options =
   ["-parse-only", Arg.Set parse_only,
    "  Executar somente o parsing";
+   "-i", Arg.Set interp,
+   " Executar interpretador";
    "-o", Arg.String (set_file outFile),
    "<file>  Para indicar o nome do ficheiro em saída"]
 
 let usage = "usage: arithc [option] file.exp"
 
-let print_tree p =
-  let rec print_stmts = function
-    | [] -> ""
-    | h::t -> print_stmt h ^ "\n" ^ print_stmts t 
-
-  and print_stmt = function 
-    | Svar (ident, t, e) -> "var " ^ ident ^ " : " ^ (print_type t) ^ " = " ^(print_expr e) ^ ";"
-    | Sset (ident, e) -> ident ^ ":=" ^ (print_expr e) ^ ";"
-    | Sprint e -> "print(" ^ (print_expr e) ^ ")" ^ ";"
-    | Sif (e, s1, s2) -> 
-      "if " ^ print_expr e ^ " then{\n" ^ print_stmts s1 ^ "}\n" ^ 
-      "else {\n" ^ print_stmts s2 ^ "}"
-    | Sforeach (e, s) -> "not implemented yet"
-    | Stype s -> "not implemented yet"
-
-  and print_expr = function
-    | Econst c -> print_const c
-    | Eident s -> s
-    | Ebinop (op, e1, e2) -> print_expr e1 ^ print_bin_op op ^ print_expr e2
-    | Eunop (op, e) -> begin
-      match op with 
-      | Uneg -> "-" ^ print_expr e
-      | Unot -> "!" ^ print_expr e
-    end
-    | Elet (id, t, e1, e2) -> 
-      "let " ^ id ^ ":" ^ print_type t ^ " = " ^ print_expr e1 ^ " " ^ " in " ^ print_expr e2
-  and print_type = function  
-    | Tint  -> "int"
-    | Tbool -> "bool"
-
-  and print_const = function
-    | Cbool b -> string_of_bool b
-    | Cint i -> string_of_int i
-
-  and print_bin_op = function
-    | Badd -> "+"
-    | Bsub -> "-"
-    | Bmul -> "*"
-    | Bdiv -> "/"
-    | Bmod -> " mod "
-    | Beq  -> "=="
-    | Bneq -> "!="
-    | Bgt  -> ">"
-    | Blt  -> "<"
-    | Bleq -> "<="
-    | Bgeq -> ">="
-    | Band -> "&"
-    | Bor  -> "|"
-  in print_endline (print_stmts p) 
-
+(* localiza linha e coluna do erro *)
 let localisation pos =
   let l = pos.pos_lnum in
   let c = pos.pos_cnum - pos.pos_bol + 1 in
@@ -75,37 +31,47 @@ let localisation pos =
 
 
 let () = 
+  (* parsing da linha de comandos *)
   Arg.parse options (set_file inFile) usage;
 
+  (* verificar se foi introduzido um ficheiro *)
   if !inFile = "" then begin 
     print_string("Nenhum ficheiro inserido\n"); exit 1 
   end;
 
+  (* verificar se a extensão do ficheiro está correta *)
   if not (Filename.check_suffix !inFile ".nx") then begin
     print_string("Ficheiro deve ter extensão .nx\n"); 
     exit 1;
-  end;
+  end; 
 
-  if !outFile = "" then outFile := Filename.chop_suffix !inFile ".nx";
+  (* caso o natrix seja executado em modo interpretador *)
+  if not !interp then
+    (* o ficheiro de output terá a extensão .s *)
+    if !outFile = "" then outFile := Filename.chop_suffix !inFile ".nx" ^ ".s";
 
   let f = open_in !inFile in
-
+  
+  (* criação do buffer de análise léxica*)
   let buf = Lexing.from_channel f in
 
     try
       let p = Parser.prog Lexer.token buf in close_in f; 
-      print_tree p;
-      print_endline "all ok";
+        if !interp then 
+          intr_program p
+        else 
+          printf "compile code goes here";
       exit 0
 
     with 
     | Lexer.Lexing_error c -> 
-      print_string "Erro na análise lexica\n";
+      print_endline "Erro na análise lexica";
       localisation (Lexing.lexeme_start_p buf);
       exit 1
+
     | Parser.Error -> 
+      print_endline "Erro durante a análise sintáctica.";
       localisation (Lexing.lexeme_start_p buf);
-      eprintf "Erro durante a análise sintáctica@.";
       exit 1
 
 
