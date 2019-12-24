@@ -40,27 +40,14 @@
 %% 
 
 prog:
-| p=stmts EOF { p }
-
-
-/* *todos* os statements separados por ;
-stmts:
-| x = stmt SCOL { [x] }
-| x = stmt SCOL xs = stmts  {x :: xs} */
-
-/* 
-stmts: 
-| s_list = separated_list(SCOL, stmt) SCOL {s_list}
-
-stmts:
-| i=stmt SCOL         { [i] }
-| l=stmts i=stmt SCOL { i :: l } */
-
+| p = stmts EOF { p }
+/* remove ; if dont work  */
+;
 
 stmts:
 | x = stmt { [x] }
-| x = stmt xs = stmts  {x :: xs} 
-
+| x = stmt xs = stmts  { x :: xs } 
+;
 
 stmt:
 | VAR id = IDENT COL t = types EQ e = expr SCOL { Svar (id, t, e) }
@@ -83,6 +70,7 @@ expr:
 | MINUS e = expr %prec uminus  { Eunop (Uneg, e) }
 | LET id = IDENT COL t = types EQ e1 = expr 
   IN e2 = expr                 {Elet (id, t, e1, e2)}
+| LP e = expr RP                {e}
 ;
 
 %inline op:

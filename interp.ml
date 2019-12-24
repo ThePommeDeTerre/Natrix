@@ -11,12 +11,11 @@ module IdMap = Map.Make(String)
 
 
 (* TODO: ser mais especifica nos erros *)
-
 exception Error of string
 let error s = raise (Error s)
 
 let typeCheck t1 t2 = match t1, t2 with
-| Tint, Vint _| Tbool, Vbool _-> true
+| Tint, Vint _ | Tbool, Vbool _-> true
 | _ -> false
 
 let rec printValue = function
@@ -30,24 +29,28 @@ let rec stmt env = function
   | Svar (x, t, e) -> 
     let v = (expr env e) in
     if typeCheck t v then Hashtbl.replace genv x (t, v) 
-    else error "Erro de tipos"
-  | Sset (x, e) -> begin
-    let v = (expr env e) in
-    try 
-      let t, _ = Hashtbl.find genv x in 
-      if typeCheck t v then Hashtbl.replace genv x (t, v) 
-      else 
-      error "Erro de tipos"
-    with Not_found -> error "Unbound value" 
-end
+    else error "Type error"
+  | Sset (x, e) -> 
+    begin
+      let v = (expr env e) in
+      try 
+        let t, _ = Hashtbl.find genv x in 
+        if typeCheck t v then Hashtbl.replace genv x (t, v) 
+        else 
+        error "Type error"
+      with Not_found -> error "Unbound value" 
+    end
   | Sprint (e) -> printValue (expr env e)
-  | Sif (e, s1, s2)-> begin
-    match (expr env e) with 
-    | Vbool true -> List.iter (fun s -> stmt env s) s1
-    | Vbool false -> List.iter (fun s -> stmt env s) s2
-    | _ -> error "bool expected" end
-  | _ -> print_endline "ainda nao implementado ;)"(*  of expr * stmt *)
-
+  | Sif (e, s1, s2)-> 
+    begin
+      match (expr env e) with 
+      | Vbool true -> List.iter (fun s -> stmt env s) s1
+      | Vbool false -> List.iter (fun s -> stmt env s) s2
+      | _ -> error "Type error" 
+    end
+  (* TODO: retirar regras nao implementadas *)
+    | _ -> print_endline "ainda nao implementado, retirar da gramatica"
+  
 and expr env = function
   | Econst (Cint i) -> Vint i
   | Econst (Cbool b) -> Vbool b
@@ -63,7 +66,9 @@ and expr env = function
   | Eunop  (op, e) -> unop op (expr env e)
     (* local *)
   | Elet (x, t, e1, e2) ->   
-  error "todo: let in"
+    let v = expr env e1 in
+    let newenv = IdMap.update x (fun _ -> Some (t, v)) env in 
+    expr newenv e2
 
 and binop op v1 v2 =
   match op, v1, v2 with
@@ -92,6 +97,7 @@ and unop op v =
 let intr_program sl =   
   let lenv = (IdMap.empty : (nxType * value) IdMap.t) in
   List.iter (fun s -> stmt lenv s) sl
+
 
       (* 
       let genv = (Hashtbl.create 17: (ident, nxType * value) Hashtbl.t)

@@ -5,7 +5,7 @@ open Interp
 
 
 let parse_only = ref true
-let interp = ref true
+let interp = ref false
 
 let inFile  = ref ""
 let outFile = ref ""
@@ -27,7 +27,7 @@ let usage = "usage: arithc [option] file.exp"
 let localisation pos =
   let l = pos.pos_lnum in
   let c = pos.pos_cnum - pos.pos_bol + 1 in
-  eprintf "File \"%s\", line %d, characters %d-%d:\n" !inFile l (c-1) c
+  Printf.printf "File \"%s\", line %d, characters %d-%d:\n" !inFile l (c-1) c
 
 
 let () = 
@@ -60,18 +60,23 @@ let () =
         if !interp then 
           intr_program p
         else 
-          printf "compile code goes here";
+          printf "compile code goes here\n";
       exit 0
 
     with 
-    | Lexer.Lexing_error c -> 
-      print_endline "Erro na análise lexica";
+    | Error s -> 
       localisation (Lexing.lexeme_start_p buf);
+      print_endline s;
+      exit 1
+      
+    | Lexer.Lexing_error c -> 
+      localisation (Lexing.lexeme_start_p buf);
+      print_endline "Erro na análise lexica";
       exit 1
 
     | Parser.Error -> 
-      print_endline "Erro durante a análise sintáctica.";
       localisation (Lexing.lexeme_start_p buf);
+      print_endline "Syntax error";
       exit 1
 
 

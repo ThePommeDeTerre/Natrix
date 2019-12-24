@@ -1,15 +1,19 @@
-var x:int = 12;
+print(let x:int = 3 in x + 3);
 
-if x < 10 then {
-    print(1);
-} else {
-    print(10);
-}
+print(x);
 
-var y:int = 10;
-
-if x >= 15 then {
-    print(!true);
-} else {
-    print(-x);
-}
+var x:int = false;
+// 
+// if x < 10 then {
+//     print(1);
+// } else {
+//     print(10);
+// }
+// 
+// var y:int = 10;
+// 
+// 
+// if (x > 7) then {  y := y + 1 ; }
+//            else {  y := y + 2 ; }
+// 
+// print(y);
