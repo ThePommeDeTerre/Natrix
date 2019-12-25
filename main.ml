@@ -60,8 +60,8 @@ let () =
         if !interp then 
           intr_program p
         else 
-          printf "compile code goes here\n";
-      exit 0
+          Compile.compileProgram p !outFile
+      (* exit 0 *)
 
     with 
     | Error s -> 

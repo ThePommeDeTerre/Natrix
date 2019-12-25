@@ -10,3 +10,6 @@ parser.cmx : ast.cmi parser.cmi
 parser.cmi : ast.cmi
 prettyPrinter.cmo : ast.cmi
 prettyPrinter.cmx : ast.cmi
+x86_64.cmo : x86_64.cmi
+x86_64.cmx : x86_64.cmi
+x86_64.cmi :

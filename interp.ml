@@ -4,9 +4,11 @@ type value =
   | Vbool of bool
   | Vint of int
 
+(* Variáveis globais são armazenadas numa hastable *)
 let genv = Hashtbl.create 17
 
-(* e utilziado um mapa para armazenar todas as var locais devido a sua natureza funcional *)
+
+(* Variáveis locais são armazenadas num map *)
 module IdMap = Map.Make(String)
 
 
@@ -23,8 +25,10 @@ let rec printValue = function
 | Vbool b -> Printf.printf "%b\n" b
 
 
-(* nota: como definimos que o let x = e1 in e2 so e valido dentro de expressoes,
-         nao e necessario pesquisar identificadores em ambientes locais *)
+(* nota: 
+como definimos que o let x = e1 in e2 so e
+valido dentro de expressoes, nao e necessario pesquisar
+identificadores em ambientes locais *)
 let rec stmt env = function
   | Svar (x, t, e) -> 
     let v = (expr env e) in
@@ -65,7 +69,12 @@ and expr env = function
   | Ebinop (op, e1, e2) -> binop op (expr env e1) (expr env e2)
   | Eunop  (op, e) -> unop op (expr env e)
     (* local *)
-  | Elet (x, t, e1, e2) ->   
+  | Elet (x, t, e1, e2) ->
+  (* IdMap.update encontra o valor com a chave x e: 
+    - se x existir, substitui o valor correspondente a x por (tipo, valor) 
+      -> atualiza o valor de x
+    - se x nao existir, cria uma nova entrada com chave x
+  *)
     let v = expr env e1 in
     let newenv = IdMap.update x (fun _ -> Some (t, v)) env in 
     expr newenv e2
@@ -98,14 +107,3 @@ let intr_program sl =
   let lenv = (IdMap.empty : (nxType * value) IdMap.t) in
   List.iter (fun s -> stmt lenv s) sl
 
-
-      (* 
-      let genv = (Hashtbl.create 17: (ident, nxType * value) Hashtbl.t)
-
-      IdMap.update encontra o valor com a chave x e: 
-    - se x existir, substitui o valor correspondente a x por (tipo, valor) 
-      -> atualiza o valor de x
-    - se x nao existir, cria uma nova entrada com chave x
-    let newEnv = IdMap.update x (fun _ -> Some (t, v)) env in 
-    expr newEnv e2
-    *)
