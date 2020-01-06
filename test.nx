@@ -1,19 +1,4 @@
-print(let x:int = 3 in x + 3);
+print(let x:bool = 5 in 10 mod 3);
 
-print(x);
-
-var x:int = false;
-// 
-// if x < 10 then {
-//     print(1);
-// } else {
-//     print(10);
-// }
-// 
-// var y:int = 10;
-// 
-// 
-// if (x > 7) then {  y := y + 1 ; }
-//            else {  y := y + 2 ; }
-// 
-// print(y);
+// Type error: This expression has type bool but an 
+// expression was expected of type int

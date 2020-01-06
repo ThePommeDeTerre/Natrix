@@ -1,5 +1,24 @@
 (* Lexer para Natrix*)
 
+(* 
+  TODO: guardar tabela de keywords numa hashtable 
+*)
+
+(* tokens nao utilizados:
+  "def",     DEF;
+  "arry",    ARRAY;
+  "filled",  FILLED;
+  "type",    TYPE;
+  "do",      DO;
+  "of",      OF;
+  "by",      BY;
+  "size",    SIZE;
+  "foreach", FOR;
+| ".."          { RANGE }
+| ','           { COM }
+| '['           { SLB }
+| ']'           { SRB }
+*)
 {
   open Lexing
   open Parser
@@ -7,26 +26,6 @@
   exception Lexing_error of char
 
 
-  (* 
-  TODO: guardar tabela de keywords numa hashtable 
-  *)
-
-  (* tokens nao utilizados:
-    "def",     DEF;
-    "arry",    ARRAY;
-    "filled",  FILLED;
-    "type",    TYPE;
-    "do",      DO;
-    "of",      OF;
-    "by",      BY;
-    "size",    SIZE;
-    "foreach", FOR;
-| ".."          { RANGE }
-| ','           { COM }
-| '['           { SLB }
-| ']'           { SRB }
-
-    *)
   let kwd_tbl = [
     "if",      IF;
     "then",    THEN;

@@ -2,7 +2,7 @@ open Ast
 open Format
 open Lexing
 open Interp
-
+open Error
 
 let parse_only = ref true
 let interp = ref false
@@ -22,13 +22,6 @@ let options =
    "<file>  Para indicar o nome do ficheiro em saída"]
 
 let usage = "usage: arithc [option] file.exp"
-
-(* localiza linha e coluna do erro *)
-let localisation pos =
-  let l = pos.pos_lnum in
-  let c = pos.pos_cnum - pos.pos_bol + 1 in
-  Printf.printf "File \"%s\", line %d, characters %d-%d:\n" !inFile l (c-1) c
-
 
 let () = 
   (* parsing da linha de comandos *)
@@ -62,21 +55,21 @@ let () =
         else 
           Compile.compileProgram p !outFile
       (* exit 0 *)
-
     with 
-    | Error s -> 
-      localisation (Lexing.lexeme_start_p buf);
-      print_endline s;
-      exit 1
-      
+    (* TODO:  *)      
     | Lexer.Lexing_error c -> 
-      localisation (Lexing.lexeme_start_p buf);
+      localisation (Lexing.lexeme_start_p buf) inFile;
       print_endline "Erro na análise lexica";
       exit 1
 
     | Parser.Error -> 
-      localisation (Lexing.lexeme_start_p buf);
+      localisation (Lexing.lexeme_start_p buf) inFile;
       print_endline "Syntax error";
+      exit 1
+
+    | RaiseError s -> 
+      localisation (Lexing.lexeme_start_p buf) inFile;
+      print_endline s;
       exit 1
 
 

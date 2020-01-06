@@ -1,5 +1,5 @@
-CMO=lexer.cmo parser.cmo x86_64.cmo compile.cmo interp.cmo main.cmo
-GENERATED = lexer.ml parser.ml parser.mli
+CMO=lexer.cmo parser.cmo x86_64.cmo error.cmo compile.cmo interp.cmo main.cmo
+GENERATED=lexer.ml parser.ml parser.mli
 BIN=natrix
 FLAGS=
 

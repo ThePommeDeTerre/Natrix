@@ -1,9 +1,24 @@
 .text
 	.globl	main
 main:
-	subq $0, %rsp
-	leaq -8(%rsp), %rbp
-	addq $0, %rsp
+	subq $8, %rsp
+	leaq 0(%rsp), %rbp
+	movq $5, %rax
+	pushq %rax
+	popq %rax
+	movq %rax, 0(%rbp)
+	movq $10, %rax
+	pushq %rax
+	movq $3, %rax
+	pushq %rax
+	popq %rbx
+	popq %rax
+	movq $0, %rdx
+	idivq %rbx
+	pushq %rdx
+	popq %rdi
+	call print_int
+	addq $8, %rsp
 	movq $0, %rax
 	ret
 print_int:
