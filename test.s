@@ -1,32 +1,49 @@
 .text
 	.globl	main
 main:
-	subq $8, %rsp
-	leaq 0(%rsp), %rbp
+	subq $0, %rsp
+	leaq -8(%rsp), %rbp
+	movq $4, %rax
+	pushq %rax
 	movq $5, %rax
 	pushq %rax
 	popq %rax
-	movq %rax, 0(%rbp)
-	movq $10, %rax
-	pushq %rax
-	movq $3, %rax
-	pushq %rax
 	popq %rbx
-	popq %rax
-	movq $0, %rdx
-	idivq %rbx
-	pushq %rdx
+	cmpq %rax, %rbx
+	setl %dil
+	movzbq %dil, %rax
+	pushq %rax
 	popq %rdi
-	call print_int
-	addq $8, %rsp
+	call .print_bool
+	addq $0, %rsp
 	movq $0, %rax
 	ret
-print_int:
+.print_int:
 	movq %rdi, %rsi
 	movq $.Sprint_int, %rdi
+	movq $0, %rax
+	call printf
+	ret
+.print_bool:
+	cmpq $0, %rdi
+	je .print_false
+	jne .print_true
+.print_true:
+	movq %rdi, %rsi
+	movq $.true, %rdi
+	movq $0, %rax
+	call printf
+	ret
+.print_false:
+	movq %rdi, %rsi
+	movq $.false, %rdi
 	movq $0, %rax
 	call printf
 	ret
 .data
 .Sprint_int:
 	.string "%d\n"
+.true:
+	.string "true\n"
+.false:
+	.string "false\n"

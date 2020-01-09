@@ -38,7 +38,7 @@ let () =
     exit 1;
   end; 
 
-  (* caso o natrix seja executado em modo interpretador *)
+  (* caso o natrix seja executado em modo  *)
   if not !interp then
     (* o ficheiro de output terá a extensão .s *)
     if !outFile = "" then outFile := Filename.chop_suffix !inFile ".nx" ^ ".s";
@@ -47,19 +47,16 @@ let () =
   
   (* criação do buffer de análise léxica*)
   let buf = Lexing.from_channel f in
-
     try
       let p = Parser.prog Lexer.token buf in close_in f; 
         if !interp then 
           intr_program p
         else 
-          Compile.compileProgram p !outFile
-      (* exit 0 *)
+          Compile.compileProgram p !outFile;
     with 
-    (* TODO:  *)      
     | Lexer.Lexing_error c -> 
       localisation (Lexing.lexeme_start_p buf) inFile;
-      print_endline "Erro na análise lexica";
+      print_endline ("Erro na análise lexica: ");
       exit 1
 
     | Parser.Error -> 
@@ -68,7 +65,7 @@ let () =
       exit 1
 
     | RaiseError s -> 
-      localisation (Lexing.lexeme_start_p buf) inFile;
+      (* localisation (Lexing.lexeme_start_p buf) inFile; *)
       print_endline s;
       exit 1
 

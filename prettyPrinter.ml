@@ -20,7 +20,7 @@ let print_tree p =
     | Eident s -> s
     | Ebinop (op, e1, e2) -> print_expr e1 ^ print_bin_op op ^ print_expr e2
     | Eunop (op, e) -> begin
-      match op with 
+      match op with
       | Uneg -> "-" ^ print_expr e
       | Unot -> "!" ^ print_expr e
     end

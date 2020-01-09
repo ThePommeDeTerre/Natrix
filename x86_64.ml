@@ -2,7 +2,21 @@
 
    2008 Jean-Christophe Filliâtre (CNRS)
    2013 Kim Nguyen (Université Paris Sud)
-*)
+
+  Adições:
+    let dil: register = "%dil"
+    let movzbq a b = ins "movzbq %a, %a" a () b ()
+
+    let cmpq a b = ins "cmpq %a, %a" a () b ()
+    let testq a b = ins "test %a, %a" a () b ()
+
+    let setcc a = ins "setcc %a"  a ()
+    let cmovcc  a b = ins "cmovcc %a, %a"  a() b ()
+    let jcc  (z: label) = ins "jcc %s"  z
+
+    onde cc = [ e | ne | s | ns | g | ge | l | le ]
+
+    *)
 
 open Format
 
@@ -23,6 +37,7 @@ let r12: register = "%r12"
 let r13: register = "%r13"
 let r14: register = "%r14"
 let r15: register = "%r15"
+let dil: register = "%dil"
 
 type label = string
 
@@ -68,6 +83,7 @@ let pr_alist fmt l =
   pr_list fmt (fun fmt (a : label) -> fprintf fmt "%s" a) l
 
 let movq a b = ins "movq %a, %a" a () b ()
+let movzbq a b = ins "movzbq %a, %a" a () b ()
 
 let leaq op r = ins "leaq %a, %s" op () r
 
@@ -92,7 +108,7 @@ let setns a = ins "setns %a" a ()
 let setg  a = ins "setg %a"  a ()
 let setge a = ins "setge %a" a ()
 let setl  a = ins "setl %a"  a ()
-let setl1 a = ins "setl1 %a" a ()
+let setle a = ins "setle %a" a ()
 
 let cmove  a b = ins "cmove %a, %a"  a() b () 
 let cmovne a b = ins "cmovne %a, %a" a() b () 

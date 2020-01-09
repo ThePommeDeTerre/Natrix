@@ -44,7 +44,8 @@ let rec stmt env = function
         error "Type error"
       with Not_found -> error "Unbound value" 
     end
-  | Sprint (e) -> printValue (expr env e)
+  | Sprint_int (e) -> printValue (expr env e)
+  | Sprint_bool (e) -> printValue (expr env e)
   | Sif (e, s1, s2)-> 
     begin
       match (expr env e) with 

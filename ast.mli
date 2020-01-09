@@ -1,12 +1,13 @@
 type program = stmt list
 
 and stmt = 
-  | Svar     of ident * nxType * expr
-  | Sset     of ident * expr
-  | Sprint   of expr
-  | Sif      of expr * stmt list * stmt list
-  | Sforeach of expr * stmt
-  | Stype    of ident 
+  | Svar        of ident * nxType * expr
+  | Sset        of ident * expr
+  | Sprint_bool of expr
+  | Sprint_int  of expr
+  | Sif         of expr * stmt list * stmt list
+  | Sforeach    of expr * stmt
+  | Stype       of ident 
   
 and expr = 
   | Econst of constant

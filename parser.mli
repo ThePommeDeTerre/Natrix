@@ -8,7 +8,8 @@ type token =
   | SCOL
   | RP
   | RB
-  | PRINT
+  | PRINTINT
+  | PRINTBOOL
   | PLUS
   | OR
   | NOT

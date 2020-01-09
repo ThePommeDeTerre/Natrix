@@ -14,6 +14,7 @@
   "by",      BY;
   "size",    SIZE;
   "foreach", FOR;
+  
 | ".."          { RANGE }
 | ','           { COM }
 | '['           { SLB }
@@ -27,22 +28,23 @@
 
 
   let kwd_tbl = [
-    "if",      IF;
-    "then",    THEN;
-    "else",    ELSE;
-    "print",   PRINT;
-    "mod",     MOD;
-    "in",      IN;
-    "var",     VAR;
-    "let",     LET;
-    "true",    CONST (Cbool true);
-    "false",   CONST (Cbool false);
-    "int", INT;
-    "bool", BOOL
+    "if",         IF;
+    "then",       THEN;
+    "else",       ELSE;
+    "print_int",  PRINTINT;
+    "print_bool", PRINTBOOL;
+    "mod",        MOD;
+    "in",         IN;
+    "var",        VAR;
+    "let",        LET;
+    "true",       CONST (Cbool true);
+    "false",      CONST (Cbool false);
+    "int",        INT;
+    "bool",       BOOL
   ]
 
   let kwd_or_id s = 
-  try List.assoc s kwd_tbl with _ -> IDENT s
+  try List.assoc s kwd_tbl with _ -> raise Not_found
 
   let newline lexbuf = 
     let pos = lexbuf.lex_curr_p in 
@@ -54,7 +56,7 @@ let letter = ['a' - 'z' 'A' - 'Z']
 let digit = ['0' - '9']
 let space = [' ' '\t']
 
-let ident = letter(letter | digit)*
+let ident = letter(letter | digit | '_')*
 let integer = digit+
 
 rule token = parse

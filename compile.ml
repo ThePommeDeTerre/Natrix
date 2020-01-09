@@ -29,8 +29,7 @@ let typeCheck p =
 
   let compareTypes t1 t2 = match t1, t2 with
     | Tint, Tint | Tbool, Tbool -> true
-    | Tint, Tbool -> typeError t1 t2
-    | Tbool, Tint -> typeError t1 t2 
+    | _, _ -> typeError t1 t2
   in 
 
   let rec typeStmt env = function
@@ -50,8 +49,9 @@ let typeCheck p =
 
         with Not_found -> unboundVarError x
     end
-    | Sprint (e) -> ignore(typeExpr env e)
-    | Sif (e, s1, s2) -> 
+    | Sprint_int  (e) -> ignore(compareTypes Tint (typeExpr env e))
+    | Sprint_bool (e) -> ignore(compareTypes Tbool (typeExpr env e))
+    | Sif (e, s1, s2) ->
       let te = typeExpr env e in
       if compareTypes Tbool te then
         List.iter (fun s -> typeStmt env s) s1;
@@ -79,17 +79,17 @@ let typeCheck p =
       typeExpr newEnv e2
 
   and typeBinOp op t1 t2 = match t1, t2, op with 
-    | Tint, Tint, Badd   -> Tint
-    | Tint, Tint, Bsub   -> Tint
-    | Tint, Tint, Bmul   -> Tint
-    | Tint, Tint, Bdiv   -> Tint
-    | Tint, Tint, Bmod   -> Tint
-    | Tbool, Tbool, Beq  -> Tbool
-    | Tbool, Tbool, Bneq -> Tbool
-    | Tbool, Tbool, Bgt  -> Tbool
-    | Tbool, Tbool, Blt  -> Tbool
-    | Tbool, Tbool, Bleq -> Tbool
-    | Tbool, Tbool, Bgeq -> Tbool
+    | Tint, Tint, Badd -> Tint
+    | Tint, Tint, Bsub -> Tint
+    | Tint, Tint, Bmul -> Tint
+    | Tint, Tint, Bdiv -> Tint
+    | Tint, Tint, Bmod -> Tint
+    | Tint, Tint, Beq  -> Tbool
+    | Tint, Tint, Bneq -> Tbool
+    | Tint, Tint, Bgt  -> Tbool
+    | Tint, Tint, Blt  -> Tbool
+    | Tint, Tint, Bleq -> Tbool
+    | Tint, Tint, Bgeq -> Tbool
     | Tbool, Tbool, Band -> Tbool
     | Tbool, Tbool, Bor  -> Tbool
     | _ -> typeError t1 t2
@@ -101,7 +101,7 @@ let typeCheck p =
 
 
 
-(* função de compilação *)
+(* --- função de compilação ---*)
 
 let rec compileStmt env next = function
   | Svar (x, t, e) ->
@@ -117,7 +117,7 @@ let rec compileStmt env next = function
       variaveis locais *)
       let (_, _) = IdMap.find x env in 
       movq (imm 0) (reg rax)
-    with Not_found -> 
+    with Not_found ->
       try 
         let (t, _) = Hashtbl.find genv x in 
         Hashtbl.replace genv x (t, ());
@@ -126,11 +126,14 @@ let rec compileStmt env next = function
         movq (reg rax) (lab x)
       with Not_found -> unboundVarError x
   end
-  | Sprint (e) -> 
+  | Sprint_int (e) -> 
     compileExpr env next e ++
     popq rdi ++
-    call "print_int"
-
+    call ".print_int"
+  | Sprint_bool (e) ->
+    compileExpr env next e ++
+    popq rdi ++
+    call ".print_bool"
   | Sif (e, s1, s2) -> nop(* TODO of expr * stmt list * stmt list *)
   (* 
   TODO: remover antes de entregar *)
@@ -173,15 +176,27 @@ and compileExpr env next = function
     idivq (reg rbx) ++
     pushq rdx
 
-  | Ebinop (op, e1, e2) -> 
-    (* 
-    TODO: lançar exceção caso e2 seja avaliada para 0 *)
-    compileExpr env next e1 ++
-    compileExpr env next e2 ++
-    popq rax ++
-    popq rbx ++
-    (binop op) (reg rbx) (reg rax) ++
-    pushq rax
+  | Ebinop (op, e1, e2) -> begin 
+    match op with
+    | Beq | Bneq | Bgt | Blt | Bleq | Bgeq -> 
+      compileExpr env next e1 ++
+      compileExpr env next e2 ++
+      popq rax ++
+      popq rbx ++
+      cmpq (reg rax) (reg rbx) ++
+      (bincmp op) (reg dil) ++
+      movzbq (reg dil) (reg rax) ++
+      pushq rax
+    | Badd | Bsub | Bmul | Band | Bor ->   
+      compileExpr env next e1 ++
+      compileExpr env next e2 ++
+      popq rax ++
+      popq rbx ++
+      (binop op) (reg rbx) (reg rax) ++
+      pushq rax 
+
+    | _ -> invalidOperand ()
+    end
 
   | Eunop (op, e) -> 
     compileExpr env next e ++
@@ -196,19 +211,35 @@ and compileExpr env next = function
     movq (reg rax) (ind ~ofs:(-next) rbp) ++
     compileExpr (IdMap.add x (t, next) env) (next + 8) e2
 
+and bincmp = function
+| Beq  -> sete
+| Bneq -> setne
+(* atenção: operadores trocados para manter
+  a ordem dos registos 
+  
+  na sintaxe at&t, a ordem dos dos operadores nas funções
+  de comparação é trocada
+  
+  ex: 
+  cmpq r1, r2
+  setl r3
+  
+  r3 = 1 se r2 < r1 
+  *)
+| Bgt  -> setg
+| Blt  -> setl
+| Bleq -> setle
+| Bgeq -> setge
+| _ -> invalidOperand ()
+
 and binop = function 
   | Badd -> addq
   | Bsub -> subq
   | Bmul -> imulq
   | Band -> andq 
   | Bor  -> orq
-  (*| Beq  -> nop  TODO *)
-  (*| Bneq -> nop  TODO *)
-  (*| Bgt  -> nop  TODO *)
-  (*| Blt  -> nop  TODO *)
-  (*| Bleq -> nop  TODO *)
-  (*| Bgeq -> nop  TODO *)
   | _ -> invalidOperand ()
+
 
 and unop = function
   | Uneg -> negq
@@ -231,20 +262,42 @@ let compileProgram p outFile =
       addq (imm !frameSize) (reg rsp) ++
       movq (imm 0) (reg rax) ++
       ret ++
-      (* adicionar print bool *)
-      label "print_int" ++
+      
+      (* print int *)
+      label ".print_int" ++
       movq (reg rdi) (reg rsi) ++
       movq (ilab ".Sprint_int") (reg rdi) ++
       
+      movq (imm 0) (reg rax) ++
+      call "printf" ++
+      ret ++
+
+      (* print bool *)
+      label ".print_bool" ++
+      cmpq (imm 0) (reg rdi) ++
+      je ".print_false" ++
+      jne ".print_true" ++
+      
+      label ".print_true" ++
+      movq (reg rdi) (reg rsi) ++
+      movq (ilab ".true") (reg rdi) ++      
+      movq (imm 0) (reg rax) ++
+      call "printf" ++
+      ret ++
+
+      label ".print_false" ++
+      movq (reg rdi) (reg rsi) ++
+      movq (ilab ".false") (reg rdi) ++      
       movq (imm 0) (reg rax) ++
       call "printf" ++
       ret;
 
     data = 
       Hashtbl.fold (fun x _ l -> label x ++ dquad [1] ++ l ) genv
-        (label ".Sprint_int" ++ string "%d\n")
+      ( label ".Sprint_int" ++ string "%d\n" ++ 
+      label ".true" ++ string "true\n" ++ 
+      label ".false" ++ string "false\n")
   } in
-
   let f = open_out outFile in
   let fmt = formatter_of_out_channel f in
   X86_64.print_program fmt p;

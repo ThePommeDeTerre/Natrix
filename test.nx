@@ -1,4 +1,5 @@
-print(let x:bool = 5 in 10 mod 3);
+print_bool(4 < 5);
+
 
 // Type error: This expression has type bool but an 
 // expression was expected of type int

@@ -63,6 +63,7 @@ val r12: register
 val r13: register
 val r14: register
 val r15: register
+val dil: register
   (** Constantes representando os registos manipuláveis. *)
 
 
@@ -85,6 +86,7 @@ val ilab: label -> operand
 (** {1 Move} *)
 
 val movq: operand -> operand -> text
+val movzbq: operand -> operand -> text
   (** cuidado : nem todas as combinações de operandas são permitidas *)
 
 (** {1 Operações aritméticas } *)
@@ -119,7 +121,7 @@ val setns: operand -> text
 val setg : operand -> text
 val setge: operand -> text
 val setl : operand -> text
-val setl1: operand -> text
+val setle: operand -> text
       (** Atribuicao condicional *)
 
 val cmove : operand -> operand -> text

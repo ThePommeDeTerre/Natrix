@@ -1,23 +1,24 @@
 State 0:
 prog' -> . prog [ # ]
 -- On VAR shift to state 1
--- On PRINT shift to state 43
--- On IF shift to state 48
--- On IDENT shift to state 52
--- On stmts shift to state 64
--- On stmt shift to state 62
--- On prog shift to state 66
+-- On PRINTINT shift to state 43
+-- On PRINTBOOL shift to state 48
+-- On IF shift to state 53
+-- On IDENT shift to state 57
+-- On stmts shift to state 69
+-- On stmt shift to state 67
+-- On prog shift to state 71
 
 State 1:
-stmt -> VAR . IDENT COL types EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR . IDENT COL types EQ expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On IDENT shift to state 2
 
 State 2:
-stmt -> VAR IDENT . COL types EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT . COL types EQ expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On COL shift to state 3
 
 State 3:
-stmt -> VAR IDENT COL . types EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT COL . types EQ expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On INT shift to state 4
 -- On BOOL shift to state 5
 -- On types shift to state 6
@@ -31,11 +32,11 @@ types -> BOOL . [ EQ ]
 -- On EQ reduce production types -> BOOL 
 
 State 6:
-stmt -> VAR IDENT COL types . EQ expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT COL types . EQ expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On EQ shift to state 7
 
 State 7:
-stmt -> VAR IDENT COL types EQ . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT COL types EQ . expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On NOT shift to state 8
 -- On MINUS shift to state 9
 -- On LP shift to state 10
@@ -538,7 +539,7 @@ expr -> expr . MOD expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . CMP expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-stmt -> VAR IDENT COL types EQ expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT COL types EQ expr . SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On SCOL shift to state 42
 -- On PLUS shift to state 19
 -- On OR shift to state 27
@@ -550,20 +551,21 @@ stmt -> VAR IDENT COL types EQ expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On AND shift to state 35
 
 State 42:
-stmt -> VAR IDENT COL types EQ expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
+stmt -> VAR IDENT COL types EQ expr SCOL . [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On VAR reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On RB reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
--- On PRINT reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
+-- On PRINTINT reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
+-- On PRINTBOOL reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On IF reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On IDENT reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 -- On EOF reduce production stmt -> VAR IDENT COL types EQ expr SCOL 
 
 State 43:
-stmt -> PRINT . LP expr RP SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> PRINTINT . LP expr RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On LP shift to state 44
 
 State 44:
-stmt -> PRINT LP . expr RP SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> PRINTINT LP . expr RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On NOT shift to state 8
 -- On MINUS shift to state 9
 -- On LP shift to state 10
@@ -581,7 +583,7 @@ expr -> expr . MOD expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . CMP expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . AND expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
 expr -> expr . OR expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
-stmt -> PRINT LP expr . RP SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> PRINTINT LP expr . RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On RP shift to state 46
 -- On PLUS shift to state 19
 -- On OR shift to state 27
@@ -593,39 +595,44 @@ stmt -> PRINT LP expr . RP SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On AND shift to state 35
 
 State 46:
-stmt -> PRINT LP expr RP . SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> PRINTINT LP expr RP . SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On SCOL shift to state 47
 
 State 47:
-stmt -> PRINT LP expr RP SCOL . [ VAR RB PRINT IF IDENT EOF ]
--- On VAR reduce production stmt -> PRINT LP expr RP SCOL 
--- On RB reduce production stmt -> PRINT LP expr RP SCOL 
--- On PRINT reduce production stmt -> PRINT LP expr RP SCOL 
--- On IF reduce production stmt -> PRINT LP expr RP SCOL 
--- On IDENT reduce production stmt -> PRINT LP expr RP SCOL 
--- On EOF reduce production stmt -> PRINT LP expr RP SCOL 
+stmt -> PRINTINT LP expr RP SCOL . [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On VAR reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On RB reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On PRINTINT reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On PRINTBOOL reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On IF reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On IDENT reduce production stmt -> PRINTINT LP expr RP SCOL 
+-- On EOF reduce production stmt -> PRINTINT LP expr RP SCOL 
 
 State 48:
-stmt -> IF . expr THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
+stmt -> PRINTBOOL . LP expr RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On LP shift to state 49
+
+State 49:
+stmt -> PRINTBOOL LP . expr RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On NOT shift to state 8
 -- On MINUS shift to state 9
 -- On LP shift to state 10
 -- On LET shift to state 11
 -- On IDENT shift to state 16
 -- On CONST shift to state 17
--- On expr shift to state 49
+-- On expr shift to state 50
 
-State 49:
-expr -> expr . PLUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MINUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . DIV expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MUL expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MOD expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . CMP expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . AND expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . OR expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
-stmt -> IF expr . THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On THEN shift to state 50
+State 50:
+expr -> expr . PLUS expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MINUS expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . DIV expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MUL expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MOD expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . CMP expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . AND expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . OR expr [ RP PLUS OR MUL MOD MINUS DIV CMP AND ]
+stmt -> PRINTBOOL LP expr . RP SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On RP shift to state 51
 -- On PLUS shift to state 19
 -- On OR shift to state 27
 -- On MUL shift to state 21
@@ -635,25 +642,22 @@ stmt -> IF expr . THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF 
 -- On CMP shift to state 31
 -- On AND shift to state 35
 
-State 50:
-stmt -> IF expr THEN . LB stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On LB shift to state 51
-
 State 51:
-stmt -> IF expr THEN LB . stmts RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On VAR shift to state 1
--- On PRINT shift to state 43
--- On IF shift to state 48
--- On IDENT shift to state 52
--- On stmts shift to state 56
--- On stmt shift to state 62
+stmt -> PRINTBOOL LP expr RP . SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On SCOL shift to state 52
 
 State 52:
-stmt -> IDENT . SET expr SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SET shift to state 53
+stmt -> PRINTBOOL LP expr RP SCOL . [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On VAR reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On RB reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On PRINTINT reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On PRINTBOOL reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On IF reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On IDENT reduce production stmt -> PRINTBOOL LP expr RP SCOL 
+-- On EOF reduce production stmt -> PRINTBOOL LP expr RP SCOL 
 
 State 53:
-stmt -> IDENT SET . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
+stmt -> IF . expr THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On NOT shift to state 8
 -- On MINUS shift to state 9
 -- On LP shift to state 10
@@ -663,16 +667,16 @@ stmt -> IDENT SET . expr SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On expr shift to state 54
 
 State 54:
-expr -> expr . PLUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MINUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . DIV expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MUL expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . MOD expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . CMP expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . AND expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-expr -> expr . OR expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
-stmt -> IDENT SET expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
--- On SCOL shift to state 55
+expr -> expr . PLUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MINUS expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . DIV expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MUL expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MOD expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . CMP expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . AND expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . OR expr [ THEN PLUS OR MUL MOD MINUS DIV CMP AND ]
+stmt -> IF expr . THEN LB stmts RB ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On THEN shift to state 55
 -- On PLUS shift to state 19
 -- On OR shift to state 27
 -- On MUL shift to state 21
@@ -683,74 +687,126 @@ stmt -> IDENT SET expr . SCOL [ VAR RB PRINT IF IDENT EOF ]
 -- On AND shift to state 35
 
 State 55:
-stmt -> IDENT SET expr SCOL . [ VAR RB PRINT IF IDENT EOF ]
+stmt -> IF expr THEN . LB stmts RB ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On LB shift to state 56
+
+State 56:
+stmt -> IF expr THEN LB . stmts RB ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On VAR shift to state 1
+-- On PRINTINT shift to state 43
+-- On PRINTBOOL shift to state 48
+-- On IF shift to state 53
+-- On IDENT shift to state 57
+-- On stmts shift to state 61
+-- On stmt shift to state 67
+
+State 57:
+stmt -> IDENT . SET expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On SET shift to state 58
+
+State 58:
+stmt -> IDENT SET . expr SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On NOT shift to state 8
+-- On MINUS shift to state 9
+-- On LP shift to state 10
+-- On LET shift to state 11
+-- On IDENT shift to state 16
+-- On CONST shift to state 17
+-- On expr shift to state 59
+
+State 59:
+expr -> expr . PLUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MINUS expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . DIV expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MUL expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . MOD expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . CMP expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . AND expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+expr -> expr . OR expr [ SCOL PLUS OR MUL MOD MINUS DIV CMP AND ]
+stmt -> IDENT SET expr . SCOL [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On SCOL shift to state 60
+-- On PLUS shift to state 19
+-- On OR shift to state 27
+-- On MUL shift to state 21
+-- On MOD shift to state 29
+-- On MINUS shift to state 23
+-- On DIV shift to state 25
+-- On CMP shift to state 31
+-- On AND shift to state 35
+
+State 60:
+stmt -> IDENT SET expr SCOL . [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On VAR reduce production stmt -> IDENT SET expr SCOL 
 -- On RB reduce production stmt -> IDENT SET expr SCOL 
--- On PRINT reduce production stmt -> IDENT SET expr SCOL 
+-- On PRINTINT reduce production stmt -> IDENT SET expr SCOL 
+-- On PRINTBOOL reduce production stmt -> IDENT SET expr SCOL 
 -- On IF reduce production stmt -> IDENT SET expr SCOL 
 -- On IDENT reduce production stmt -> IDENT SET expr SCOL 
 -- On EOF reduce production stmt -> IDENT SET expr SCOL 
 
-State 56:
-stmt -> IF expr THEN LB stmts . RB ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On RB shift to state 57
-
-State 57:
-stmt -> IF expr THEN LB stmts RB . ELSE LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On ELSE shift to state 58
-
-State 58:
-stmt -> IF expr THEN LB stmts RB ELSE . LB stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On LB shift to state 59
-
-State 59:
-stmt -> IF expr THEN LB stmts RB ELSE LB . stmts RB [ VAR RB PRINT IF IDENT EOF ]
--- On VAR shift to state 1
--- On PRINT shift to state 43
--- On IF shift to state 48
--- On IDENT shift to state 52
--- On stmts shift to state 60
--- On stmt shift to state 62
-
-State 60:
-stmt -> IF expr THEN LB stmts RB ELSE LB stmts . RB [ VAR RB PRINT IF IDENT EOF ]
--- On RB shift to state 61
-
 State 61:
-stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB . [ VAR RB PRINT IF IDENT EOF ]
+stmt -> IF expr THEN LB stmts . RB ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On RB shift to state 62
+
+State 62:
+stmt -> IF expr THEN LB stmts RB . ELSE LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On ELSE shift to state 63
+
+State 63:
+stmt -> IF expr THEN LB stmts RB ELSE . LB stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On LB shift to state 64
+
+State 64:
+stmt -> IF expr THEN LB stmts RB ELSE LB . stmts RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On VAR shift to state 1
+-- On PRINTINT shift to state 43
+-- On PRINTBOOL shift to state 48
+-- On IF shift to state 53
+-- On IDENT shift to state 57
+-- On stmts shift to state 65
+-- On stmt shift to state 67
+
+State 65:
+stmt -> IF expr THEN LB stmts RB ELSE LB stmts . RB [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
+-- On RB shift to state 66
+
+State 66:
+stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB . [ VAR RB PRINTINT PRINTBOOL IF IDENT EOF ]
 -- On VAR reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On RB reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
--- On PRINT reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
+-- On PRINTINT reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
+-- On PRINTBOOL reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On IF reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On IDENT reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 -- On EOF reduce production stmt -> IF expr THEN LB stmts RB ELSE LB stmts RB 
 
-State 62:
+State 67:
 stmts -> stmt . [ RB EOF ]
 stmts -> stmt . stmts [ RB EOF ]
 -- On VAR shift to state 1
--- On PRINT shift to state 43
--- On IF shift to state 48
--- On IDENT shift to state 52
--- On stmts shift to state 63
--- On stmt shift to state 62
+-- On PRINTINT shift to state 43
+-- On PRINTBOOL shift to state 48
+-- On IF shift to state 53
+-- On IDENT shift to state 57
+-- On stmts shift to state 68
+-- On stmt shift to state 67
 -- On RB reduce production stmts -> stmt 
 -- On EOF reduce production stmts -> stmt 
 
-State 63:
+State 68:
 stmts -> stmt stmts . [ RB EOF ]
 -- On RB reduce production stmts -> stmt stmts 
 -- On EOF reduce production stmts -> stmt stmts 
 
-State 64:
+State 69:
 prog -> stmts . EOF [ # ]
--- On EOF shift to state 65
+-- On EOF shift to state 70
 
-State 65:
+State 70:
 prog -> stmts EOF . [ # ]
 -- On # reduce production prog -> stmts EOF 
 
-State 66:
+State 71:
 prog' -> prog . [ # ]
 -- On # accept prog
 
