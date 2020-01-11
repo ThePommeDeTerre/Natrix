@@ -246,7 +246,7 @@ val shlb: [`B] operand -> [`B] operand -> text
 val shlw: [`W] operand -> [`W] operand -> text
 val shll: [`L] operand -> [`L] operand -> text
 val shlq: [`Q] operand -> [`Q] operand -> text
-  (** nota: shl é idêntico a  sal *)
+  (** nota: shl é idêntico a sal *)
 
 val shrb: [`B] operand -> [`B] operand -> text
 val shrw: [`W] operand -> [`W] operand -> text
