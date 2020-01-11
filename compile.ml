@@ -1,8 +1,8 @@
 open Ast
-open Format
 open Error
+open Format
+open TypeCheck
 open X86_64
-(* TODO: criar modulo de recuperaçao de erros *)
 
 (* Variáveis globais são armazenadas numa hashtable *)
 (* 
@@ -18,98 +18,27 @@ module IdMap = Map.Make(String)
 (cada variável local ocupa 8 bytes) *)
 let frameSize = ref 0
 
+let ifcounter = ref 0
 
 (* Função que verifica que não existem erros de tipagem,
    executada antes de começar a compilar o programa
 
    TODO: passar esta funçao para modulo auxiliar e usar no interpretador
 *)
-let typeCheck p = 
-  let (tenv: (string, nxType) Hashtbl.t) = Hashtbl.create 17 in
-
-  let compareTypes t1 t2 = match t1, t2 with
-    | Tint, Tint | Tbool, Tbool -> true
-    | _, _ -> typeError t1 t2
-  in 
-
-  let rec typeStmt env = function
-    | Svar (x, t, e) ->
-      let te = typeExpr env e in
-      if compareTypes te t then 
-        Hashtbl.add tenv x te;
-        print_endline ("new var: " ^ x)
-    | Sset (x, e) -> begin
-      try 
-        let t = IdMap.find x env in
-        ignore(compareTypes t (typeExpr env e))
-      with Not_found ->
-        try 
-          let t = IdMap.find x env in
-          ignore(compareTypes t (typeExpr env e))
-
-        with Not_found -> unboundVarError x
-    end
-    | Sprint_int  (e) -> ignore(compareTypes Tint (typeExpr env e))
-    | Sprint_bool (e) -> ignore(compareTypes Tbool (typeExpr env e))
-    | Sif (e, s1, s2) ->
-      let te = typeExpr env e in
-      if compareTypes Tbool te then
-        List.iter (fun s -> typeStmt env s) s1;
-        List.iter (fun s -> typeStmt env s) s2;
-    (* 
-    TODO: remover antes de entregar *)
-    | _ -> error "not implemented"
-  
-  and typeExpr env = function
-    | Econst (Cint _) -> Tint
-    | Econst (Cbool _) -> Tbool
-    | Eident x -> begin 
-      try
-        let t = IdMap.find x env in t
-      with Not_found -> 
-        try 
-          let t = Hashtbl.find tenv x in t
-        with Not_found -> unboundVarError x
-    end
-    | Ebinop (op, e1, e2) -> typeBinOp op (typeExpr env e1) (typeExpr env e2)
-    | Eunop (op, e) -> typeUnop op (typeExpr env e)
-    | Elet (x, t, e1, e2) -> 
-      ignore(compareTypes t (typeExpr env e1));
-      let newEnv = IdMap.add x (typeExpr env e1) env in  
-      typeExpr newEnv e2
-
-  and typeBinOp op t1 t2 = match t1, t2, op with 
-    | Tint, Tint, Badd -> Tint
-    | Tint, Tint, Bsub -> Tint
-    | Tint, Tint, Bmul -> Tint
-    | Tint, Tint, Bdiv -> Tint
-    | Tint, Tint, Bmod -> Tint
-    | Tint, Tint, Beq  -> Tbool
-    | Tint, Tint, Bneq -> Tbool
-    | Tint, Tint, Bgt  -> Tbool
-    | Tint, Tint, Blt  -> Tbool
-    | Tint, Tint, Bleq -> Tbool
-    | Tint, Tint, Bgeq -> Tbool
-    | Tbool, Tbool, Band -> Tbool
-    | Tbool, Tbool, Bor  -> Tbool
-    | _ -> typeError t1 t2
-  and typeUnop op t1 = 
-    match op with
-    | Uneg -> Tint
-    | Unot -> Tbool
-  in List.iter (fun s -> typeStmt (IdMap.empty) s) p
-
-
 
 (* --- função de compilação ---*)
 
 let rec compileStmt env next = function
-  | Svar (x, t, e) ->
-    Hashtbl.replace genv x (t, ());
-    compileExpr env next e ++
-    popq rax ++
-    movq (reg rax) (lab x)
-
+  
+  (* TODO: tratar exceçao not_found *)
+  | Svar (x, t, e) -> begin
+    try 
+      Hashtbl.replace genv x (t, ());
+      compileExpr env next e ++
+      popq rax ++
+      movq (reg rax) (lab x)
+    with Not_found -> error "error compileStmt"
+  end
   | Sset (x, e) -> begin 
     try 
       (* 
@@ -126,6 +55,7 @@ let rec compileStmt env next = function
         movq (reg rax) (lab x)
       with Not_found -> unboundVarError x
   end
+
   | Sprint_int (e) -> 
     compileExpr env next e ++
     popq rdi ++
@@ -134,28 +64,99 @@ let rec compileStmt env next = function
     compileExpr env next e ++
     popq rdi ++
     call ".print_bool"
-  | Sif (e, s1, s2) -> nop(* TODO of expr * stmt list * stmt list *)
+  | Sif (e, s1, s2) -> 
+    ifcounter := !ifcounter +1;
+    let ifStmts = List.fold_right (++) (List.map (fun s -> compileStmt env next s) s1) nop in
+    let elseStmts = List.fold_right (++) (List.map (fun s -> compileStmt env next s) s2) nop in
+    let ifLable = (".if_" ^ string_of_int !ifcounter) in
+    let contLable = (".end_if_else_" ^ string_of_int !ifcounter) in
+
+    compileExpr env next e ++
+    popq rax ++
+    cmpq (imm 1) (reg rax) ++
+    (* se condição e retorna true (1), saltar para label .Ln *)
+    je ifLable ++
+    (* caso contrario, executar o codigo que se segue ao salo«to *)
+    elseStmts ++
+    (* sair do bloco if else *)
+    jmp contLable ++
+
+    label ifLable ++
+    ifStmts ++
+    jmp contLable ++
+
+    label contLable 
   (* 
   TODO: remover antes de entregar *)
-  | _ -> error "not implemented"
+
+  (*     
+    if !frameSize = next then frameSize := 8 + !frameSize;
+    compileExpr env next e1 ++ 
+    popq rax ++
+    movq (reg rax) (ind ~ofs:(-next) rbp) ++
+    compileExpr (IdMap.add x (t, next) env) (next + 8) e2
+ *)
+  | Sforeach (id, e1, e2, stmts) -> 
+    let forLabel = (".for_" ^ string_of_int !ifcounter) in
+    let contLabel = (".end_for_" ^ string_of_int !ifcounter) in
+    
+    if !frameSize = next then frameSize := 8 + !frameSize;
+    let for_env = IdMap.add id (Tint, next) env in
+    let body = List.fold_right (++) (List.map (fun s -> compileStmt for_env next s) stmts ) nop in
+    
+    (* avaliar valor do limite inferior e1 e move-lo para -next(%rbp) *)
+
+    compileExpr env next e1 ++
+    popq rax ++
+    movq (reg rax) (ind ~ofs:(-next) rbp) ++
+
+    (* avaliar valor do limite supererior e2 *)
+    compileExpr env next e2 ++
+    
+    (* jmp forLabel ++  TODO: pode nao ser necessario forçar o salto, testar *)
+    
+    label forLabel ++
+
+    popq rbx ++
+    (* testar i < e2
+    se i < e2, entao executar corpo do ciclo for e incrementar i;
+    caso contrario, saltar para label .cont e continuar a execução do codigo 
+    
+    at&t troca a ordem dos operandos, por isso jge se 
+    *)
+
+    let ofs = (fun (_, n) -> -n) (IdMap.find id for_env) in
+    cmpq (ind ~ofs rbp) (reg rbx) ++
+    jl contLabel ++
+    pushq (reg rbx) ++
+    
+    body ++
+    
+    incq (ind ~ofs rbp) ++
+
+    jmp forLabel ++
+
+    label contLabel
 
 and compileExpr env next = function
   | Econst (Cbool b) ->
     movq (imm (if b then 1 else 0)) (reg rax) ++ 
-    pushq rax
+    pushq (reg rax)
   | Econst (Cint i) ->  
       movq (imm i) (reg rax) ++ 
-      pushq rax
-
+      pushq (reg rax)
   | Eident x -> begin
     try 
+    (* procurar pelo identificador x no contexto local *)
       let ofs = (fun (_, n) -> -n) (IdMap.find x env) in 
       movq (ind ~ofs rbp) (reg rax) ++
-      pushq rax
+      pushq (reg rax)
     with Not_found -> 
+    (* se x não foi encontrada no ambiente local, 
+      procurar pelo identificador x no contexto global *)
       if not (Hashtbl.mem genv x) then unboundVarError x;
       movq (lab x) (reg rax) ++ 
-      pushq rax
+      pushq (reg rax)
   end
 
   | Ebinop (Bdiv, e1, e2) -> 
@@ -165,7 +166,7 @@ and compileExpr env next = function
     popq rax ++
     movq (imm 0) (reg rdx) ++
     idivq (reg rbx) ++
-    pushq rax
+    pushq (reg rax)
 
   | Ebinop (Bmod, e1, e2) -> 
     compileExpr env next e1 ++
@@ -174,7 +175,7 @@ and compileExpr env next = function
     popq rax ++
     movq (imm 0) (reg rdx) ++
     idivq (reg rbx) ++
-    pushq rdx
+    pushq (reg rdx)
 
   | Ebinop (op, e1, e2) -> begin 
     match op with
@@ -185,24 +186,32 @@ and compileExpr env next = function
       popq rbx ++
       cmpq (reg rax) (reg rbx) ++
       (bincmp op) (reg dil) ++
-      movzbq (reg dil) (reg rax) ++
-      pushq rax
+      movzbq (reg dil) rax ++
+      pushq (reg rax)
+
     | Badd | Bsub | Bmul | Band | Bor ->   
       compileExpr env next e1 ++
       compileExpr env next e2 ++
       popq rax ++
       popq rbx ++
       (binop op) (reg rbx) (reg rax) ++
-      pushq rax 
+      pushq (reg rax) 
 
     | _ -> invalidOperand ()
     end
 
-  | Eunop (op, e) -> 
+  | Eunop (Unot, e) -> 
+    compileExpr env next e ++
+    popq rdi ++
+    notb (reg dil) ++
+    xorb (imm 254) (reg dil) ++
+    pushq (reg rdi)
+  |
+   Eunop (Uneg, e) -> 
     compileExpr env next e ++
     popq rax ++
-    (unop op) (reg rax) ++
-    pushq rax
+    negq (reg rax) ++
+    pushq (reg rax)
 
   | Elet (x, t, e1, e2) ->
     if !frameSize = next then frameSize := 8 + !frameSize;
@@ -212,25 +221,13 @@ and compileExpr env next = function
     compileExpr (IdMap.add x (t, next) env) (next + 8) e2
 
 and bincmp = function
-| Beq  -> sete
-| Bneq -> setne
-(* atenção: operadores trocados para manter
-  a ordem dos registos 
-  
-  na sintaxe at&t, a ordem dos dos operadores nas funções
-  de comparação é trocada
-  
-  ex: 
-  cmpq r1, r2
-  setl r3
-  
-  r3 = 1 se r2 < r1 
-  *)
-| Bgt  -> setg
-| Blt  -> setl
-| Bleq -> setle
-| Bgeq -> setge
-| _ -> invalidOperand ()
+  | Beq  -> sete
+  | Bneq -> setne
+  | Bgt  -> setg
+  | Blt  -> setl
+  | Bleq -> setle
+  | Bgeq -> setge
+  | _ -> invalidOperand ()
 
 and binop = function 
   | Badd -> addq
@@ -239,12 +236,6 @@ and binop = function
   | Band -> andq 
   | Bor  -> orq
   | _ -> invalidOperand ()
-
-
-and unop = function
-  | Uneg -> negq
-  | Unot -> notq
-
 
 let compileProgram p outFile = 
 
@@ -255,14 +246,14 @@ let compileProgram p outFile =
   let code = List.fold_right (++) code nop in
   let p = {
     text = 
-      glabel "main" ++
+      globl "main" ++ label "main" ++
       subq (imm !frameSize) (reg rsp) ++
       leaq (ind ~ofs:(!frameSize - 8) rsp) rbp ++
       code ++
       addq (imm !frameSize) (reg rsp) ++
       movq (imm 0) (reg rax) ++
       ret ++
-      
+
       (* print int *)
       label ".print_int" ++
       movq (reg rdi) (reg rsi) ++

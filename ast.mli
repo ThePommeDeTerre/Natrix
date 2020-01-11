@@ -6,8 +6,7 @@ and stmt =
   | Sprint_bool of expr
   | Sprint_int  of expr
   | Sif         of expr * stmt list * stmt list
-  | Sforeach    of expr * stmt
-  | Stype       of ident 
+  | Sforeach    of ident * expr * expr * stmt list
   
 and expr = 
   | Econst of constant
@@ -23,11 +22,13 @@ and ident = string
 and nxType =
   | Tint
   | Tbool
+  (* | Trange *)
 
 (* Constantes *)
 and constant = 
   | Cbool of bool
   | Cint of int
+(* | Crange of int * int *)
 
 (* Operadores unários *)
 and unop =

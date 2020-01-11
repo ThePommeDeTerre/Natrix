@@ -39,9 +39,9 @@ A modalidade de entrega toma a forma de um **arquivo `tar` comprimido (nome.tgz)
 
 O arquivo deve conter todos os ficheiros fontes necessários à compilação assim como um `Makefile` completo (as entradas `all` e `clean` devem estar presentes).
 
-Este arquivo deverá igualmente conter o relatório qued escreve o trabalho feito, as escolhas (de desenho, etc.)tomadas, a documentação do código e o manual do utilizador.
+Este arquivo deverá igualmente conter o relatório que descreve o trabalho feito, as escolhas (de desenho, etc.) tomadas, a documentação do código e o manual do utilizador.
 
-É igualmente esperada que seja preparada uma apresentação para a respectiva defesa.
+É igualmente esperado que seja preparada uma apresentação para a respectiva defesa.
 
 ## _Deadlines_
 

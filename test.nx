@@ -1,5 +1,10 @@
-print_bool(4 < 5);
+//print_int(let x:int=2 in let y:int=5 in x + y);
 
 
-// Type error: This expression has type bool but an 
-// expression was expected of type int
+foreach i in 0..4 do{
+    if (i mod 2 == 0) then {
+        print_int(i);
+    } else {
+        print_bool(false);
+    }
+} 

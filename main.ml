@@ -3,8 +3,9 @@ open Format
 open Lexing
 open Interp
 open Error
+open PrettyPrinter
 
-let parse_only = ref true
+let parse_only = ref false
 let interp = ref false
 
 let inFile  = ref ""
@@ -21,7 +22,7 @@ let options =
    "-o", Arg.String (set_file outFile),
    "<file>  Para indicar o nome do ficheiro em saída"]
 
-let usage = "usage: arithc [option] file.exp"
+let usage = "usage: natrix [option] file.exp"
 
 let () = 
   (* parsing da linha de comandos *)
@@ -51,6 +52,8 @@ let () =
       let p = Parser.prog Lexer.token buf in close_in f; 
         if !interp then 
           intr_program p
+        else if !parse_only then 
+          print_tree p
         else 
           Compile.compileProgram p !outFile;
     with 

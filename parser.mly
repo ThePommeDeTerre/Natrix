@@ -7,11 +7,11 @@
 %token <string> IDENT
 
 /* TODO tokens por implementar: 
-%token DEF ARRAY FILLED BY COM RANGE FOR DO TYPE SIZE OF
+%token DEF ARRAY FILLED BY COM TYPE SIZE OF
 %token SLB SRB
 */
 
-%token IF THEN ELSE PRINTINT PRINTBOOL LET IN VAR  
+%token IF THEN ELSE PRINTINT PRINTBOOL LET IN VAR DO RANGE FOR
 %token SET EQ SCOL COL NOT AND OR 
 %token PLUS MINUS DIV MUL MOD
 %token INT BOOL
@@ -41,22 +41,25 @@
 
 prog:
 | p = stmts EOF { p }
-/* remove ; if dont work  */
 ;
 
 stmts:
-| x = stmt { [x] }
+| x = stmt             { [x] }
 | x = stmt xs = stmts  { x :: xs } 
 ;
 
 stmt:
 | VAR id = IDENT COL t = types EQ e = expr SCOL { Svar (id, t, e) }
 | id = IDENT SET e = expr SCOL                  { Sset (id, e) }
-| PRINTINT LP e = expr RP SCOL                 { Sprint_int e }
-| PRINTBOOL LP e = expr RP SCOL                { Sprint_bool e }
+| PRINTINT LP e = expr RP SCOL                  { Sprint_int e }
+| PRINTBOOL LP e = expr RP SCOL                 { Sprint_bool e }
 | IF e = expr THEN LB s1 = stmts RB 
   ELSE LB s2 = stmts RB                         { Sif (e, s1, s2) }
+| FOR id = IDENT IN e1 = expr RANGE e2 = expr DO LB
+  s = stmts RB                                  { Sforeach (id, e1, e2, s) }
+  
 ;
+
 
 types:
 | INT  {Tint}

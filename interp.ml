@@ -1,8 +1,15 @@
 open Ast
+open TypeCheck
+open Error
 
 type value = 
   | Vbool of bool
   | Vint of int
+
+let typeOfValue = function 
+  | Vbool _ -> Tbool
+  | Vint _ -> Tint
+
 
 (* Variáveis globais são armazenadas numa hastable *)
 let genv = Hashtbl.create 17
@@ -10,15 +17,6 @@ let genv = Hashtbl.create 17
 
 (* Variáveis locais são armazenadas num map *)
 module IdMap = Map.Make(String)
-
-
-(* TODO: ser mais especifica nos erros *)
-exception Error of string
-let error s = raise (Error s)
-
-let typeCheck t1 t2 = match t1, t2 with
-| Tint, Vint _ | Tbool, Vbool _-> true
-| _ -> false
 
 let rec printValue = function
 | Vint n -> Printf.printf "%d\n" n
@@ -32,30 +30,37 @@ identificadores em ambientes locais *)
 let rec stmt env = function
   | Svar (x, t, e) -> 
     let v = (expr env e) in
-    if typeCheck t v then Hashtbl.replace genv x (t, v) 
-    else error "Type error"
+    if compareTypes t (typeOfValue v) then Hashtbl.replace genv x (t, v)
   | Sset (x, e) -> 
     begin
       let v = (expr env e) in
       try 
         let t, _ = Hashtbl.find genv x in 
-        if typeCheck t v then Hashtbl.replace genv x (t, v) 
-        else 
-        error "Type error"
-      with Not_found -> error "Unbound value" 
+        if compareTypes t (typeOfValue v) then Hashtbl.replace genv x (t, v) 
+      with Not_found -> unboundVarError x
     end
   | Sprint_int (e) -> printValue (expr env e)
   | Sprint_bool (e) -> printValue (expr env e)
   | Sif (e, s1, s2)-> 
     begin
-      match (expr env e) with 
+      let v = expr env e in
+      match v with 
       | Vbool true -> List.iter (fun s -> stmt env s) s1
       | Vbool false -> List.iter (fun s -> stmt env s) s2
-      | _ -> error "Type error" 
-    end
-  (* TODO: retirar regras nao implementadas *)
-    | _ -> print_endline "ainda nao implementado, retirar da gramatica"
-  
+      | _ -> typeError Tbool (typeOfValue v)
+    end 
+
+    | Sforeach (id, e1, e2, stmts) ->
+      match expr env e1, expr env e2 with
+      | Vint v1, Vint v2  -> 
+        let intpr_stmt i s = 
+          (* adicionar id ao ambiente local iniciado a v1*)
+            stmt (IdMap.update id (fun _ -> Some (Tint, Vint i)) env) s 
+        in for i = v1 to v2 do
+          List.iter (fun s -> intpr_stmt i s) stmts
+        done
+      | _ -> error "todo" 
+      
 and expr env = function
   | Econst (Cint i) -> Vint i
   | Econst (Cbool b) -> Vbool b
@@ -65,7 +70,7 @@ and expr env = function
       with Not_found ->
         try
           let _, v = Hashtbl.find genv x in v
-        with Not_found -> error ("Unbound value " ^ x) 
+        with Not_found -> unboundVarError x
     end
   | Ebinop (op, e1, e2) -> binop op (expr env e1) (expr env e2)
   | Eunop  (op, e) -> unop op (expr env e)
@@ -95,16 +100,17 @@ and binop op v1 v2 =
   | Blt, _, _  -> Vbool (compare v1 v2 < 0)
   | Bgeq, _, _ -> Vbool (compare v1 v2 >= 0)
   | Bleq, _, _ -> Vbool (compare v1 v2 <= 0)
-  | _ -> error "Unsupported operand types" 
+  | _ -> invalidOperand ()
   
 and unop op v = 
   match op, v with
   | Uneg, Vint n  -> Vint (-n) 
   | Unot, Vbool b -> Vbool (not b)
-  | _ -> error "Unsupported operand types" 
+  | _ -> invalidOperand () 
 
 
-let intr_program sl =   
+let intr_program p =  
+  typeCheck p;
   let lenv = (IdMap.empty : (nxType * value) IdMap.t) in
-  List.iter (fun s -> stmt lenv s) sl
+  List.iter (fun s -> stmt lenv s) p
 

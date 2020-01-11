@@ -8,12 +8,15 @@ let print_tree p =
   and print_stmt = function 
     | Svar (ident, t, e) -> "var " ^ ident ^ " : " ^ (print_type t) ^ " = " ^(print_expr e) ^ ";"
     | Sset (ident, e) -> ident ^ ":=" ^ (print_expr e) ^ ";"
-    | Sprint e -> "print(" ^ (print_expr e) ^ ")" ^ ";"
+    | Sprint_bool e -> "print(" ^ (print_expr e) ^ ")" ^ ";"
+    | Sprint_int e -> "print(" ^ (print_expr e) ^ ")" ^ ";"
     | Sif (e, s1, s2) -> 
       "if " ^ print_expr e ^ " then{\n" ^ print_stmts s1 ^ "}\n" ^ 
       "else {\n" ^ print_stmts s2 ^ "}"
-    | Sforeach (e, s) -> "not implemented yet"
-    | Stype s -> "not implemented yet"
+    | Sforeach(id, e1, e2, s) -> 
+      "foreach " ^ id ^ " in " ^ print_expr e1 ^ print_expr e2 ^ "{\n" ^
+      print_stmts s ^ "\n"
+    | _ -> "not implemented yet"
 
   and print_expr = function
     | Econst c -> print_const c

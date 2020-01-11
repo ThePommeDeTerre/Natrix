@@ -9,13 +9,10 @@
   "arry",    ARRAY;
   "filled",  FILLED;
   "type",    TYPE;
-  "do",      DO;
   "of",      OF;
   "by",      BY;
   "size",    SIZE;
-  "foreach", FOR;
   
-| ".."          { RANGE }
 | ','           { COM }
 | '['           { SLB }
 | ']'           { SRB }
@@ -26,8 +23,11 @@
 
   exception Lexing_error of char
 
-
+(* TODO:
+  MAXINT e MINIT*)
   let kwd_tbl = [
+    "do",         DO;
+    "foreach",    FOR;
     "if",         IF;
     "then",       THEN;
     "else",       ELSE;
@@ -44,7 +44,7 @@
   ]
 
   let kwd_or_id s = 
-  try List.assoc s kwd_tbl with _ -> raise Not_found
+  try List.assoc s kwd_tbl with _ -> IDENT s
 
   let newline lexbuf = 
     let pos = lexbuf.lex_curr_p in 
@@ -66,6 +66,7 @@ rule token = parse
 | ident as id   { kwd_or_id id }
 | ';'           { SCOL }
 | ':'           { COL }
+| ".."          { RANGE }
 | ":="          { SET }
 | '('           { LP }  
 | ')'           { RP }

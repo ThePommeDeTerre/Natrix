@@ -8,6 +8,7 @@ type token =
   | SCOL
   | RP
   | RB
+  | RANGE
   | PRINTINT
   | PRINTBOOL
   | PLUS
@@ -23,9 +24,11 @@ type token =
   | IN
   | IF
   | IDENT of (string)
+  | FOR
   | EQ
   | EOF
   | ELSE
+  | DO
   | DIV
   | CONST of (Ast.constant)
   | COL

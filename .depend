@@ -1,21 +1,27 @@
 ast.cmi :
-compile.cmo : x86_64.cmi error.cmi ast.cmi compile.cmi
-compile.cmx : x86_64.cmx error.cmx ast.cmi compile.cmi
+compile.cmo : x86_64.cmi typeCheck.cmi error.cmi ast.cmi compile.cmi
+compile.cmx : x86_64.cmx typeCheck.cmx error.cmx ast.cmi compile.cmi
 compile.cmi : ast.cmi
 error.cmo : ast.cmi error.cmi
 error.cmx : ast.cmi error.cmi
 error.cmi : ast.cmi
-interp.cmo : ast.cmi
-interp.cmx : ast.cmi
+interp.cmo : typeCheck.cmi error.cmi ast.cmi
+interp.cmx : typeCheck.cmx error.cmx ast.cmi
 lexer.cmo : parser.cmi
 lexer.cmx : parser.cmx
-main.cmo : parser.cmi lexer.cmo interp.cmo error.cmi compile.cmi ast.cmi
-main.cmx : parser.cmx lexer.cmx interp.cmx error.cmx compile.cmx ast.cmi
+main.cmo : prettyPrinter.cmi parser.cmi lexer.cmo interp.cmo error.cmi \
+    compile.cmi ast.cmi
+main.cmx : prettyPrinter.cmx parser.cmx lexer.cmx interp.cmx error.cmx \
+    compile.cmx ast.cmi
 parser.cmo : ast.cmi parser.cmi
 parser.cmx : ast.cmi parser.cmi
 parser.cmi : ast.cmi
-prettyPrinter.cmo : ast.cmi
-prettyPrinter.cmx : ast.cmi
+prettyPrinter.cmo : ast.cmi prettyPrinter.cmi
+prettyPrinter.cmx : ast.cmi prettyPrinter.cmi
+prettyPrinter.cmi : ast.cmi
+typeCheck.cmo : error.cmi ast.cmi typeCheck.cmi
+typeCheck.cmx : error.cmx ast.cmi typeCheck.cmi
+typeCheck.cmi : ast.cmi
 x86_64.cmo : x86_64.cmi
 x86_64.cmx : x86_64.cmi
 x86_64.cmi :
