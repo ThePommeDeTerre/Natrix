@@ -63,8 +63,9 @@ foreach i in 1..19 do { x := x + i;   y = i * 2;}
 // um exemplo completo de um programa natrix
 
 type t = 0 .. 1000 ;
-
 type arr : array t of int;
+
+
 var a : arr filled by 0;
 
 var n2 : int = 0 ;

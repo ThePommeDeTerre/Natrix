@@ -130,7 +130,7 @@ val r14b: [`B] register
 val r15b: [`B] register
   (** registros 8 bits *)
 
-(** {1 Operandas } *)
+(** {1 Operadores } *)
 
 type 'size operand
   (** O tipo abstracto das operandas *)
@@ -142,7 +142,6 @@ val imm32: int32 -> [>] operand
 val imm64: int64 -> [>] operand
   (** operanda directa $i *)
 val reg: 'size register -> 'size operand
-
 (* val (!%): 'size register -> 'size operand *)
   (** registro *)
 val ind: ?ofs:int -> ?index:'size1 register -> ?scale:int ->
