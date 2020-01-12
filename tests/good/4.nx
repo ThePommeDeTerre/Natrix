@@ -1,4 +1,0 @@
-// verificar modulo
-print(19 mod 4);
-
-// Resultado: 3
