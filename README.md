@@ -20,12 +20,12 @@ gcc -no-pie -g <ficheiro.s>  # é gerado output
 ~~~
 Em alternativa, este conjunto de instruções pode ser executado num só comando:
 ~~~bash
-./natrix <file.nx> && gcc -no-pie -g <file.s> &&./a.out
+./natrix <ficheiro.nx> && gcc -no-pie -g <ficheiro.s> &&./a.out
 ~~~
 
  ## Como interpretar um programa?
  Face a um ficheiro .nx é possível interpretá-lo executando o comando:
 
  ~~~bash
-./natrix -i <file.nx>
+./natrix -i <ficheiro.nx>
  ~~~
