@@ -5,7 +5,7 @@ Para compilar o projeto apenas é necessário executar o seguinte comando no ter
 ~~~bash
 make
 ~~~
-Caso pretenda eliminar todos os ficheiro de *output*, utilize:
+Caso pretenda eliminar todos os ficheiros de *output*, utilize:
  ~~~bash
  make clean
  ~~~
