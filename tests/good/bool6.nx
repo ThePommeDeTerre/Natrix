@@ -1,4 +1,4 @@
-print_bool(true = false)
+print_bool(true == false)
 print_bool(true != false)
 print_bool(true <  false)
 print_bool(true <= false)
