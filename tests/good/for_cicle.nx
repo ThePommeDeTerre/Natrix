@@ -1,7 +1,5 @@
 // verificar se o ciclo `for` funciona
 
-type r = 0 .. 5;
-
-foreach i in r do {
-    print(i);
+foreach i in 0..5 do {
+    print_int(i);
 }
