@@ -1,30 +1,10 @@
 (* Lexer para Natrix*)
-
-(* 
-  TODO: guardar tabela de keywords numa hashtable 
-*)
-
-(* tokens nao utilizados:
-  "def",     DEF;
-  "arry",    ARRAY;
-  "filled",  FILLED;
-  "type",    TYPE;
-  "of",      OF;
-  "by",      BY;
-  "size",    SIZE;
-  
-| ','           { COM }
-| '['           { SLB }
-| ']'           { SRB }
-*)
 {
   open Lexing
   open Parser
 
   exception Lexing_error of char
 
-(* TODO:
-  MAXINT e MINIT*)
   let kwd_tbl = [
     "do",         DO;
     "foreach",    FOR;
@@ -56,7 +36,7 @@ let letter = ['a' - 'z' 'A' - 'Z']
 let digit = ['0' - '9']
 let space = [' ' '\t']
 
-let ident = letter(letter | digit | '_')*
+let ident = letter(letter | digit | '_' )*
 let integer = digit+
 
 rule token = parse

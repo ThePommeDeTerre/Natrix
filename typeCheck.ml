@@ -9,6 +9,9 @@ let compareTypes t1 t2 = match t1, t2 with
 | _, _ -> typeError t1 t2
 
 
+(* Função que verifica que não existem erros de tipagem,
+   executada antes de começar a compilar o programa
+*)
 
 let typeCheck p = 
   let (tenv: (string, nxType) Hashtbl.t) = Hashtbl.create 17 in
@@ -82,5 +85,3 @@ let typeCheck p =
     | Uneg -> Tint
     | Unot -> Tbool
   in List.iter (fun s -> typeStmt (IdMap.empty) s) p
-
-

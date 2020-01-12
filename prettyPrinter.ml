@@ -16,7 +16,7 @@ let print_tree p =
     | Sforeach(id, e1, e2, s) -> 
       "foreach " ^ id ^ " in " ^ print_expr e1 ^ print_expr e2 ^ "{\n" ^
       print_stmts s ^ "\n"
-    | _ -> "not implemented yet"
+      
 
   and print_expr = function
     | Econst c -> print_const c

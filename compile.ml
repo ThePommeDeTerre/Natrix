@@ -6,8 +6,6 @@ open X86_64
 
 (* Variáveis globais são armazenadas numa hashtable *)
 (* 
- TODO: duvida - no arithc porque hashtable de (string, unit)? *)
-(* 
 TODO: remover unit se nao for necessario *)
 let (genv: (string, nxType * unit) Hashtbl.t) = Hashtbl.create 17
 
@@ -20,11 +18,6 @@ let frameSize = ref 0
 
 let ifcounter = ref 0
 
-(* Função que verifica que não existem erros de tipagem,
-   executada antes de começar a compilar o programa
-
-   TODO: passar esta funçao para modulo auxiliar e usar no interpretador
-*)
 
 (* --- função de compilação ---*)
 
@@ -37,7 +30,7 @@ let rec compileStmt env next = function
       compileExpr env next e ++
       popq rax ++
       movq (reg rax) (lab x)
-    with Not_found -> error "error compileStmt"
+    with Not_found -> unboundVarError x
   end
   | Sset (x, e) -> begin 
     try 
@@ -143,8 +136,8 @@ and compileExpr env next = function
     movq (imm (if b then 1 else 0)) (reg rax) ++ 
     pushq (reg rax)
   | Econst (Cint i) ->  
-      movq (imm i) (reg rax) ++ 
-      pushq (reg rax)
+    movq (imm i) (reg rax) ++ 
+    pushq (reg rax)
   | Eident x -> begin
     try 
     (* procurar pelo identificador x no contexto local *)
@@ -285,7 +278,8 @@ let compileProgram p outFile =
 
     data = 
       Hashtbl.fold (fun x _ l -> label x ++ dquad [1] ++ l ) genv
-      ( label ".Sprint_int" ++ string "%d\n" ++ 
+      (
+      label ".Sprint_int" ++ string "%d\n" ++ 
       label ".true" ++ string "true\n" ++ 
       label ".false" ++ string "false\n")
   } in

@@ -7,7 +7,7 @@ main:
 	pushq %rax
 	popq %rax
 	movq %rax, 0(%rbp)
-	movq $4, %rax
+	movq $5, %rax
 	pushq %rax
 .for_0:
 	popq %rbx
@@ -40,19 +40,15 @@ main:
 	call .print_bool
 	jmp .end_if_else_1
 .if_1:
-	movq 0(%rbp), %rax
+	movq $1, %rax
 	pushq %rax
 	popq %rdi
-	call .print_int
+	call .print_bool
 	jmp .end_if_else_1
 .end_if_else_1:
 	incq 0(%rbp)
 	jmp .for_0
 .end_for_0:
-	movq $42, %rax
-	pushq %rax
-	popq %rdi
-	call .print_int
 	addq $8, %rsp
 	movq $0, %rax
 	ret
@@ -79,6 +75,10 @@ main:
 	call printf
 	ret
 	.data
+.max_int:
+	.quad 4611686018427387903
+.min_int:
+	.quad -4611686018427387904
 .Sprint_int:
 	.string "%d\n"
 .true:

@@ -1,10 +1,11 @@
 //print_int(let x:int=2 in let y:int=5 in x + y);
 
+foreach i in 0..5 do{
 
-foreach i in 0..4 do{
     if (i mod 2 == 0) then {
-        print_int(i);
+        print_bool(true);
     } else {
         print_bool(false);
     }
+    
 } 

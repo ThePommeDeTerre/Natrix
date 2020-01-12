@@ -1,0 +1,2421 @@
+\documentclass[11pt]{article} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Ast}}}
+\label{module:Ast}\index{Ast@\verb`Ast`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{type:Ast.program}\begin{ocamldoccode}
+type program = stmt list 
+\end{ocamldoccode}
+\index{program@\verb`program`}
+
+
+
+
+\label{type:Ast.stmt}\begin{ocamldoccode}
+type stmt =
+  | Svar of ident * nxType * expr
+  | Sset of ident * expr
+  | Sprint_bool of expr
+  | Sprint_int of expr
+  | Sif of expr * stmt list * stmt list
+  | Sforeach of ident * expr * expr * stmt list
+\end{ocamldoccode}
+\index{stmt@\verb`stmt`}
+
+
+
+
+\label{type:Ast.expr}\begin{ocamldoccode}
+type expr =
+  | Econst of constant
+  | Eident of ident
+  | Ebinop of binop * expr * expr
+  | Eunop of unop * expr
+  | Elet of ident * nxType * expr * expr
+\end{ocamldoccode}
+\index{expr@\verb`expr`}
+
+
+
+
+\label{type:Ast.ident}\begin{ocamldoccode}
+type ident = string 
+\end{ocamldoccode}
+\index{ident@\verb`ident`}
+
+
+
+
+\label{type:Ast.nxType}\begin{ocamldoccode}
+type nxType =
+  | Tint
+  | Tbool
+\end{ocamldoccode}
+\index{nxType@\verb`nxType`}
+
+
+
+
+\label{type:Ast.constant}\begin{ocamldoccode}
+type constant =
+  | Cint of int
+  | Cmaxint
+  | Cminint
+  | Cbool of bool
+\end{ocamldoccode}
+\index{constant@\verb`constant`}
+
+
+
+
+\label{type:Ast.unop}\begin{ocamldoccode}
+type unop =
+  | Uneg
+  | Unot
+\end{ocamldoccode}
+\index{unop@\verb`unop`}
+
+
+
+
+\label{type:Ast.binop}\begin{ocamldoccode}
+type binop =
+  | Badd
+  | Bsub
+  | Bmul
+  | Bdiv
+  | Bmod
+  | Beq
+  | Bneq
+  | Bgt
+  | Blt
+  | Bleq
+  | Bgeq
+  | Band
+  | Bor
+\end{ocamldoccode}
+\index{binop@\verb`binop`}
+
+
+\section{Module {\tt{Compile}}}
+\label{module:Compile}\index{Compile@\verb`Compile`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{val:Compile.compileProgram}\begin{ocamldoccode}
+val compileProgram : Ast.program -> string -> unit
+\end{ocamldoccode}
+\index{compileProgram@\verb`compileProgram`}
+
+
+\section{Module {\tt{Error}}}
+\label{module:Error}\index{Error@\verb`Error`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{exception:Error.RaiseError}\begin{ocamldoccode}
+exception RaiseError of string
+\end{ocamldoccode}
+\index{RaiseError@\verb`RaiseError`}
+
+
+
+
+\label{val:Error.localisation}\begin{ocamldoccode}
+val localisation : Stdlib.Lexing.position -> string Stdlib.ref -> unit
+\end{ocamldoccode}
+\index{localisation@\verb`localisation`}
+\begin{ocamldocdescription}
+{\tt{localisation pos inFile}} Localiza a linha e coluna do erro
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:Error.error}\begin{ocamldoccode}
+val error : string -> {\textquotesingle}a
+\end{ocamldoccode}
+\index{error@\verb`error`}
+\begin{ocamldocdescription}
+{\tt{error s}} levanta uma exceção {\tt{RaiseError}}
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:Error.unboundVarError}\begin{ocamldoccode}
+val unboundVarError : string -> {\textquotesingle}a
+\end{ocamldoccode}
+\index{unboundVarError@\verb`unboundVarError`}
+
+
+
+
+\label{val:Error.typeError}\begin{ocamldoccode}
+val typeError : Ast.nxType -> Ast.nxType -> {\textquotesingle}a
+\end{ocamldoccode}
+\index{typeError@\verb`typeError`}
+
+
+
+
+\label{val:Error.invalidOperand}\begin{ocamldoccode}
+val invalidOperand : unit -> {\textquotesingle}a
+\end{ocamldoccode}
+\index{invalidOperand@\verb`invalidOperand`}
+
+
+\section{Module {\tt{Parser}}}
+\label{module:Parser}\index{Parser@\verb`Parser`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{type:Parser.token}\begin{ocamldoccode}
+type token =
+  | VAR
+  | THEN
+  | SET
+  | SCOL
+  | RP
+  | RB
+  | RANGE
+  | PRINTINT
+  | PRINTBOOL
+  | PLUS
+  | OR
+  | NOT
+  | MUL
+  | MOD
+  | MINUS
+  | MININT
+  | MAXINT
+  | LP
+  | LET
+  | LB
+  | INT
+  | IN
+  | IF
+  | IDENT of string
+  | FOR
+  | EQ
+  | EOF
+  | ELSE
+  | DO
+  | DIV
+  | CONST of Ast.constant
+  | COL
+  | CMP of Ast.binop
+  | BOOL
+  | AND
+\end{ocamldoccode}
+\index{token@\verb`token`}
+
+
+
+
+\label{exception:Parser.Error}\begin{ocamldoccode}
+exception Error
+\end{ocamldoccode}
+\index{Error@\verb`Error`}
+
+
+
+
+\label{val:Parser.prog}\begin{ocamldoccode}
+val prog :
+  (Stdlib.Lexing.lexbuf -> token) -> Stdlib.Lexing.lexbuf -> Ast.program
+\end{ocamldoccode}
+\index{prog@\verb`prog`}
+
+
+\section{Module {\tt{PrettyPrinter}}}
+\label{module:PrettyPrinter}\index{PrettyPrinter@\verb`PrettyPrinter`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{val:PrettyPrinter.print-underscoretree}\begin{ocamldoccode}
+val print_tree : Ast.stmt list -> unit
+\end{ocamldoccode}
+\index{print-underscoretree@\verb`print_tree`}
+
+
+\section{Module {\tt{TypeCheck}}}
+\label{module:TypeCheck}\index{TypeCheck@\verb`TypeCheck`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{val:TypeCheck.compareTypes}\begin{ocamldoccode}
+val compareTypes : Ast.nxType -> Ast.nxType -> bool
+\end{ocamldoccode}
+\index{compareTypes@\verb`compareTypes`}
+
+
+
+
+\label{val:TypeCheck.typeCheck}\begin{ocamldoccode}
+val typeCheck : Ast.stmt list -> unit
+\end{ocamldoccode}
+\index{typeCheck@\verb`typeCheck`}
+
+
+\section{Module {\tt{X86\_64}} : Biblioteca para produzir código Assembly X86-64}
+\label{module:X86-underscore64}\index{X86-underscore64@\verb`X86_64`}
+
+
+
+    Trata-se aqui somente dum fragmento relativamente modesto do assembly X86-64.
+
+{\bf Author(s): }Jean-Christophe Filliâtre (CNRS), Kim Nguyen (Université Paris Sud)
+
+    [Comments translation to PT - Simão Melo de Sousa]
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\section{Código }
+
+
+
+
+\label{type:X86-underscore64.asm}\begin{ocamldoccode}
+type {\textquotesingle}a asm 
+\end{ocamldoccode}
+\index{asm@\verb`asm`}
+\begin{ocamldocdescription}
+Tipo abstrato para representar código assembly. 
+  O parâmetro {\tt{{\textquotesingle}a}} é acrescentado como um tipo fantasma.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:X86-underscore64.text}\begin{ocamldoccode}
+type text = [ {\textasciigrave}text ] asm 
+\end{ocamldoccode}
+\index{text@\verb`text`}
+\begin{ocamldocdescription}
+Tipo representando código assembly que se encontra na zona de texto.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:X86-underscore64.data}\begin{ocamldoccode}
+type data = [ {\textasciigrave}data ] asm 
+\end{ocamldoccode}
+\index{data@\verb`data`}
+\begin{ocamldocdescription}
+Tipo representando código assembly que se encontra na zona de dados.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:X86-underscore64.label}\begin{ocamldoccode}
+type label = string 
+\end{ocamldoccode}
+\index{label@\verb`label`}
+\begin{ocamldocdescription}
+Etiquetas/rótulos (labels) de endereços são representadas por *strings*.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.nop}\begin{ocamldoccode}
+val nop : [>  ] asm
+\end{ocamldoccode}
+\index{nop@\verb`nop`}
+\begin{ocamldocdescription}
+A instrução vazia. Pode encontrar-se no texto ou nos dados.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.(-plus-plus)}\begin{ocamldoccode}
+val (++) : ([< {\textasciigrave}data | {\textasciigrave}text ] as {\textquotesingle}a) asm -> {\textquotesingle}a asm -> {\textquotesingle}a asm
+\end{ocamldoccode}
+\index{(-plus-plus)@\verb`(++)`}
+\begin{ocamldocdescription}
+{\tt{(++) x y}} junta dois pedaços de código {\tt{x}} {\tt{y}} ({\tt{text}} com {\tt{text}}, {\tt{data}} com {\tt{data}}).
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.inline}\begin{ocamldoccode}
+val inline : string -> [>  ] asm
+\end{ocamldoccode}
+\index{inline@\verb`inline`}
+\begin{ocamldocdescription}
+{\tt{inline s}} copia a *string* {\tt{s}} tal como está no ficheiro assembly.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:X86-underscore64.program}\begin{ocamldoccode}
+type program = 
+{\char123}  text : text ;
+  data : data ;
+{\char125}
+\end{ocamldoccode}
+\index{program@\verb`program`}
+\begin{ocamldocdescription}
+Tipo representativo da estrutura de um programa.
+  Um programa é constituído de uma zona de texto e de uam zona de dados.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.print-underscoreprogram}\begin{ocamldoccode}
+val print_program : Stdlib.Format.formatter -> program -> unit
+\end{ocamldoccode}
+\index{print-underscoreprogram@\verb`print_program`}
+\begin{ocamldocdescription}
+{\tt{print\_program fmt p}} imprime o código do programa {\tt{p}} no *formatter* {\tt{fmt}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.print-underscorein-underscorefile}\begin{ocamldoccode}
+val print_in_file : file:string -> program -> unit
+\end{ocamldoccode}
+\index{print-underscorein-underscorefile@\verb`print_in_file`}
+
+
+
+
+\section{Registos }
+
+
+
+
+\label{type:X86-underscore64.size}\begin{ocamldoccode}
+type size = [ {\textasciigrave}B | {\textasciigrave}L | {\textasciigrave}Q | {\textasciigrave}W ] 
+\end{ocamldoccode}
+\index{size@\verb`size`}
+
+
+
+
+\label{type:X86-underscore64.register}\begin{ocamldoccode}
+type {\textquotesingle}size register 
+\end{ocamldoccode}
+\index{register@\verb`register`}
+\begin{ocamldocdescription}
+Tipo abstrato para os registos.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.rax}\begin{ocamldoccode}
+val rax : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rax@\verb`rax`}
+
+
+
+
+\label{val:X86-underscore64.rbx}\begin{ocamldoccode}
+val rbx : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rbx@\verb`rbx`}
+
+
+
+
+\label{val:X86-underscore64.rcx}\begin{ocamldoccode}
+val rcx : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rcx@\verb`rcx`}
+
+
+
+
+\label{val:X86-underscore64.rdx}\begin{ocamldoccode}
+val rdx : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rdx@\verb`rdx`}
+
+
+
+
+\label{val:X86-underscore64.rsi}\begin{ocamldoccode}
+val rsi : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rsi@\verb`rsi`}
+
+
+
+
+\label{val:X86-underscore64.rdi}\begin{ocamldoccode}
+val rdi : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rdi@\verb`rdi`}
+
+
+
+
+\label{val:X86-underscore64.rbp}\begin{ocamldoccode}
+val rbp : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rbp@\verb`rbp`}
+
+
+
+
+\label{val:X86-underscore64.rsp}\begin{ocamldoccode}
+val rsp : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{rsp@\verb`rsp`}
+
+
+
+
+\label{val:X86-underscore64.r8}\begin{ocamldoccode}
+val r8 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r8@\verb`r8`}
+
+
+
+
+\label{val:X86-underscore64.r9}\begin{ocamldoccode}
+val r9 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r9@\verb`r9`}
+
+
+
+
+\label{val:X86-underscore64.r10}\begin{ocamldoccode}
+val r10 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r10@\verb`r10`}
+
+
+
+
+\label{val:X86-underscore64.r11}\begin{ocamldoccode}
+val r11 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r11@\verb`r11`}
+
+
+
+
+\label{val:X86-underscore64.r12}\begin{ocamldoccode}
+val r12 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r12@\verb`r12`}
+
+
+
+
+\label{val:X86-underscore64.r13}\begin{ocamldoccode}
+val r13 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r13@\verb`r13`}
+
+
+
+
+\label{val:X86-underscore64.r14}\begin{ocamldoccode}
+val r14 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r14@\verb`r14`}
+
+
+
+
+\label{val:X86-underscore64.r15}\begin{ocamldoccode}
+val r15 : [ {\textasciigrave}Q ] register
+\end{ocamldoccode}
+\index{r15@\verb`r15`}
+\begin{ocamldocdescription}
+Registos 64 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.eax}\begin{ocamldoccode}
+val eax : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{eax@\verb`eax`}
+
+
+
+
+\label{val:X86-underscore64.ebx}\begin{ocamldoccode}
+val ebx : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{ebx@\verb`ebx`}
+
+
+
+
+\label{val:X86-underscore64.ecx}\begin{ocamldoccode}
+val ecx : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{ecx@\verb`ecx`}
+
+
+
+
+\label{val:X86-underscore64.edx}\begin{ocamldoccode}
+val edx : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{edx@\verb`edx`}
+
+
+
+
+\label{val:X86-underscore64.esi}\begin{ocamldoccode}
+val esi : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{esi@\verb`esi`}
+
+
+
+
+\label{val:X86-underscore64.edi}\begin{ocamldoccode}
+val edi : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{edi@\verb`edi`}
+
+
+
+
+\label{val:X86-underscore64.ebp}\begin{ocamldoccode}
+val ebp : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{ebp@\verb`ebp`}
+
+
+
+
+\label{val:X86-underscore64.esp}\begin{ocamldoccode}
+val esp : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{esp@\verb`esp`}
+
+
+
+
+\label{val:X86-underscore64.r8d}\begin{ocamldoccode}
+val r8d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r8d@\verb`r8d`}
+
+
+
+
+\label{val:X86-underscore64.r9d}\begin{ocamldoccode}
+val r9d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r9d@\verb`r9d`}
+
+
+
+
+\label{val:X86-underscore64.r10d}\begin{ocamldoccode}
+val r10d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r10d@\verb`r10d`}
+
+
+
+
+\label{val:X86-underscore64.r11d}\begin{ocamldoccode}
+val r11d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r11d@\verb`r11d`}
+
+
+
+
+\label{val:X86-underscore64.r12d}\begin{ocamldoccode}
+val r12d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r12d@\verb`r12d`}
+
+
+
+
+\label{val:X86-underscore64.r13d}\begin{ocamldoccode}
+val r13d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r13d@\verb`r13d`}
+
+
+
+
+\label{val:X86-underscore64.r14d}\begin{ocamldoccode}
+val r14d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r14d@\verb`r14d`}
+
+
+
+
+\label{val:X86-underscore64.r15d}\begin{ocamldoccode}
+val r15d : [ {\textasciigrave}L ] register
+\end{ocamldoccode}
+\index{r15d@\verb`r15d`}
+\begin{ocamldocdescription}
+Registos 32 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.ax}\begin{ocamldoccode}
+val ax : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{ax@\verb`ax`}
+
+
+
+
+\label{val:X86-underscore64.bx}\begin{ocamldoccode}
+val bx : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{bx@\verb`bx`}
+
+
+
+
+\label{val:X86-underscore64.cx}\begin{ocamldoccode}
+val cx : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{cx@\verb`cx`}
+
+
+
+
+\label{val:X86-underscore64.dx}\begin{ocamldoccode}
+val dx : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{dx@\verb`dx`}
+
+
+
+
+\label{val:X86-underscore64.si}\begin{ocamldoccode}
+val si : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{si@\verb`si`}
+
+
+
+
+\label{val:X86-underscore64.di}\begin{ocamldoccode}
+val di : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{di@\verb`di`}
+
+
+
+
+\label{val:X86-underscore64.bp}\begin{ocamldoccode}
+val bp : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{bp@\verb`bp`}
+
+
+
+
+\label{val:X86-underscore64.sp}\begin{ocamldoccode}
+val sp : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{sp@\verb`sp`}
+
+
+
+
+\label{val:X86-underscore64.r8w}\begin{ocamldoccode}
+val r8w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r8w@\verb`r8w`}
+
+
+
+
+\label{val:X86-underscore64.r9w}\begin{ocamldoccode}
+val r9w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r9w@\verb`r9w`}
+
+
+
+
+\label{val:X86-underscore64.r10w}\begin{ocamldoccode}
+val r10w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r10w@\verb`r10w`}
+
+
+
+
+\label{val:X86-underscore64.r11w}\begin{ocamldoccode}
+val r11w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r11w@\verb`r11w`}
+
+
+
+
+\label{val:X86-underscore64.r12w}\begin{ocamldoccode}
+val r12w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r12w@\verb`r12w`}
+
+
+
+
+\label{val:X86-underscore64.r13w}\begin{ocamldoccode}
+val r13w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r13w@\verb`r13w`}
+
+
+
+
+\label{val:X86-underscore64.r14w}\begin{ocamldoccode}
+val r14w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r14w@\verb`r14w`}
+
+
+
+
+\label{val:X86-underscore64.r15w}\begin{ocamldoccode}
+val r15w : [ {\textasciigrave}W ] register
+\end{ocamldoccode}
+\index{r15w@\verb`r15w`}
+\begin{ocamldocdescription}
+Registos 16 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.al}\begin{ocamldoccode}
+val al : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{al@\verb`al`}
+
+
+
+
+\label{val:X86-underscore64.bl}\begin{ocamldoccode}
+val bl : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{bl@\verb`bl`}
+
+
+
+
+\label{val:X86-underscore64.cl}\begin{ocamldoccode}
+val cl : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{cl@\verb`cl`}
+
+
+
+
+\label{val:X86-underscore64.dl}\begin{ocamldoccode}
+val dl : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{dl@\verb`dl`}
+
+
+
+
+\label{val:X86-underscore64.ah}\begin{ocamldoccode}
+val ah : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{ah@\verb`ah`}
+
+
+
+
+\label{val:X86-underscore64.bh}\begin{ocamldoccode}
+val bh : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{bh@\verb`bh`}
+
+
+
+
+\label{val:X86-underscore64.ch}\begin{ocamldoccode}
+val ch : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{ch@\verb`ch`}
+
+
+
+
+\label{val:X86-underscore64.dh}\begin{ocamldoccode}
+val dh : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{dh@\verb`dh`}
+
+
+
+
+\label{val:X86-underscore64.sil}\begin{ocamldoccode}
+val sil : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{sil@\verb`sil`}
+
+
+
+
+\label{val:X86-underscore64.dil}\begin{ocamldoccode}
+val dil : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{dil@\verb`dil`}
+
+
+
+
+\label{val:X86-underscore64.bpl}\begin{ocamldoccode}
+val bpl : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{bpl@\verb`bpl`}
+
+
+
+
+\label{val:X86-underscore64.spl}\begin{ocamldoccode}
+val spl : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{spl@\verb`spl`}
+
+
+
+
+\label{val:X86-underscore64.r8b}\begin{ocamldoccode}
+val r8b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r8b@\verb`r8b`}
+
+
+
+
+\label{val:X86-underscore64.r9b}\begin{ocamldoccode}
+val r9b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r9b@\verb`r9b`}
+
+
+
+
+\label{val:X86-underscore64.r10b}\begin{ocamldoccode}
+val r10b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r10b@\verb`r10b`}
+
+
+
+
+\label{val:X86-underscore64.r11b}\begin{ocamldoccode}
+val r11b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r11b@\verb`r11b`}
+
+
+
+
+\label{val:X86-underscore64.r12b}\begin{ocamldoccode}
+val r12b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r12b@\verb`r12b`}
+
+
+
+
+\label{val:X86-underscore64.r13b}\begin{ocamldoccode}
+val r13b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r13b@\verb`r13b`}
+
+
+
+
+\label{val:X86-underscore64.r14b}\begin{ocamldoccode}
+val r14b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r14b@\verb`r14b`}
+
+
+
+
+\label{val:X86-underscore64.r15b}\begin{ocamldoccode}
+val r15b : [ {\textasciigrave}B ] register
+\end{ocamldoccode}
+\index{r15b@\verb`r15b`}
+\begin{ocamldocdescription}
+Registos 8 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\section{operandos }
+
+
+
+
+\label{type:X86-underscore64.operand}\begin{ocamldoccode}
+type {\textquotesingle}size operand 
+\end{ocamldoccode}
+\index{operand@\verb`operand`}
+\begin{ocamldocdescription}
+O tipo abstracto das operandos.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.imm}\begin{ocamldoccode}
+val imm : int -> [>  ] operand
+\end{ocamldoccode}
+\index{imm@\verb`imm`}
+\begin{ocamldocdescription}
+operando imediato \$i.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.imm32}\begin{ocamldoccode}
+val imm32 : int32 -> [>  ] operand
+\end{ocamldoccode}
+\index{imm32@\verb`imm32`}
+\begin{ocamldocdescription}
+operando imediato \$i de 32 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.imm64}\begin{ocamldoccode}
+val imm64 : int64 -> [>  ] operand
+\end{ocamldoccode}
+\index{imm64@\verb`imm64`}
+\begin{ocamldocdescription}
+operando imediato \$i de 64 bits.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.reg}\begin{ocamldoccode}
+val reg : {\textquotesingle}size register -> {\textquotesingle}size operand
+\end{ocamldoccode}
+\index{reg@\verb`reg`}
+\begin{ocamldocdescription}
+Registo.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.ind}\begin{ocamldoccode}
+val ind :
+  ?ofs:int ->
+  ?index:{\textquotesingle}size1 register ->
+  ?scale:int -> {\textquotesingle}size2 register -> [>  ] operand
+\end{ocamldoccode}
+\index{ind@\verb`ind`}
+\begin{ocamldocdescription}
+operando indireto {\tt{ofs(register, index, scale)}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.lab}\begin{ocamldoccode}
+val lab : label -> [>  ] operand
+\end{ocamldoccode}
+\index{lab@\verb`lab`}
+\begin{ocamldocdescription}
+Etiqueta L.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.ilab}\begin{ocamldoccode}
+val ilab : label -> [ {\textasciigrave}Q ] operand
+\end{ocamldoccode}
+\index{ilab@\verb`ilab`}
+\begin{ocamldocdescription}
+Etiqueta directa \$L.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\section{Instruções }
+
+
+
+
+\subsection{Transferência }
+
+
+
+
+\label{val:X86-underscore64.movb}\begin{ocamldoccode}
+val movb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{movb@\verb`movb`}
+
+
+
+
+\label{val:X86-underscore64.movw}\begin{ocamldoccode}
+val movw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{movw@\verb`movw`}
+
+
+
+
+\label{val:X86-underscore64.movl}\begin{ocamldoccode}
+val movl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{movl@\verb`movl`}
+
+
+
+
+\label{val:X86-underscore64.movq}\begin{ocamldoccode}
+val movq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{movq@\verb`movq`}
+\begin{ocamldocdescription}
+Instruções de transferência de dados. 
+  Cuidado : nem todas as combinações de operandos são permitidas
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.movsbw}\begin{ocamldoccode}
+val movsbw : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}W ] register -> text
+\end{ocamldoccode}
+\index{movsbw@\verb`movsbw`}
+
+
+
+
+\label{val:X86-underscore64.movsbl}\begin{ocamldoccode}
+val movsbl : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}L ] register -> text
+\end{ocamldoccode}
+\index{movsbl@\verb`movsbl`}
+
+
+
+
+\label{val:X86-underscore64.movsbq}\begin{ocamldoccode}
+val movsbq : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movsbq@\verb`movsbq`}
+
+
+
+
+\label{val:X86-underscore64.movswl}\begin{ocamldoccode}
+val movswl : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}L ] register -> text
+\end{ocamldoccode}
+\index{movswl@\verb`movswl`}
+
+
+
+
+\label{val:X86-underscore64.movswq}\begin{ocamldoccode}
+val movswq : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movswq@\verb`movswq`}
+
+
+
+
+\label{val:X86-underscore64.movslq}\begin{ocamldoccode}
+val movslq : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movslq@\verb`movslq`}
+\begin{ocamldocdescription}
+8 $\rightarrow$ 64 bit, com **extensão de sinal**
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.movzbw}\begin{ocamldoccode}
+val movzbw : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}W ] register -> text
+\end{ocamldoccode}
+\index{movzbw@\verb`movzbw`}
+
+
+
+
+\label{val:X86-underscore64.movzbl}\begin{ocamldoccode}
+val movzbl : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}L ] register -> text
+\end{ocamldoccode}
+\index{movzbl@\verb`movzbl`}
+
+
+
+
+\label{val:X86-underscore64.movzbq}\begin{ocamldoccode}
+val movzbq : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movzbq@\verb`movzbq`}
+
+
+
+
+\label{val:X86-underscore64.movzwl}\begin{ocamldoccode}
+val movzwl : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}L ] register -> text
+\end{ocamldoccode}
+\index{movzwl@\verb`movzwl`}
+
+
+
+
+\label{val:X86-underscore64.movzwq}\begin{ocamldoccode}
+val movzwq : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movzwq@\verb`movzwq`}
+\begin{ocamldocdescription}
+8 $\rightarrow$ 64 bit, com **extensão por zero**
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.movabsq}\begin{ocamldoccode}
+val movabsq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{movabsq@\verb`movabsq`}
+\begin{ocamldocdescription}
+{\tt{movabsq a b}} copia um valor direto {\tt{a}} de 64 bits para um registo {\tt{b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Arithmética }
+
+
+
+
+\label{val:X86-underscore64.leab}\begin{ocamldoccode}
+val leab : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] register -> text
+\end{ocamldoccode}
+\index{leab@\verb`leab`}
+
+
+
+
+\label{val:X86-underscore64.leaw}\begin{ocamldoccode}
+val leaw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] register -> text
+\end{ocamldoccode}
+\index{leaw@\verb`leaw`}
+
+
+
+
+\label{val:X86-underscore64.leal}\begin{ocamldoccode}
+val leal : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] register -> text
+\end{ocamldoccode}
+\index{leal@\verb`leal`}
+
+
+
+
+\label{val:X86-underscore64.leaq}\begin{ocamldoccode}
+val leaq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{leaq@\verb`leaq`}
+\begin{ocamldocdescription}
+{\tt{lea[ b | w | l | q ] op r}} carrega o endereço efectivo de {\tt{op}} para o registo {\tt{r}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.incb}\begin{ocamldoccode}
+val incb : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{incb@\verb`incb`}
+
+
+
+
+\label{val:X86-underscore64.incw}\begin{ocamldoccode}
+val incw : [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{incw@\verb`incw`}
+
+
+
+
+\label{val:X86-underscore64.incl}\begin{ocamldoccode}
+val incl : [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{incl@\verb`incl`}
+
+
+
+
+\label{val:X86-underscore64.incq}\begin{ocamldoccode}
+val incq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{incq@\verb`incq`}
+\begin{ocamldocdescription}
+{\tt{inc[ b | w | l | q ] a}} adiciona 1 ao operando {\tt{a}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.decb}\begin{ocamldoccode}
+val decb : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{decb@\verb`decb`}
+
+
+
+
+\label{val:X86-underscore64.decw}\begin{ocamldoccode}
+val decw : [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{decw@\verb`decw`}
+
+
+
+
+\label{val:X86-underscore64.decl}\begin{ocamldoccode}
+val decl : [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{decl@\verb`decl`}
+
+
+
+
+\label{val:X86-underscore64.decq}\begin{ocamldoccode}
+val decq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{decq@\verb`decq`}
+\begin{ocamldocdescription}
+{\tt{dec[ b | w | l | q ] a}} subtrai 1 ao operando {\tt{a}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.negb}\begin{ocamldoccode}
+val negb : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{negb@\verb`negb`}
+
+
+
+
+\label{val:X86-underscore64.negw}\begin{ocamldoccode}
+val negw : [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{negw@\verb`negw`}
+
+
+
+
+\label{val:X86-underscore64.negl}\begin{ocamldoccode}
+val negl : [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{negl@\verb`negl`}
+
+
+
+
+\label{val:X86-underscore64.negq}\begin{ocamldoccode}
+val negq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{negq@\verb`negq`}
+\begin{ocamldocdescription}
+{\tt{neg[ b | w | l | q ] a}} devolve valor negativo do operando {\tt{a}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.addb}\begin{ocamldoccode}
+val addb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{addb@\verb`addb`}
+
+
+
+
+\label{val:X86-underscore64.addw}\begin{ocamldoccode}
+val addw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{addw@\verb`addw`}
+
+
+
+
+\label{val:X86-underscore64.addl}\begin{ocamldoccode}
+val addl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{addl@\verb`addl`}
+
+
+
+
+\label{val:X86-underscore64.addq}\begin{ocamldoccode}
+val addq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{addq@\verb`addq`}
+\begin{ocamldocdescription}
+{\tt{add[ b | w | l | q ] a b}} adiciona o operando {\tt{a}} a {\tt{b}}. Resultado é guardado em {\tt{b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.subb}\begin{ocamldoccode}
+val subb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{subb@\verb`subb`}
+
+
+
+
+\label{val:X86-underscore64.subw}\begin{ocamldoccode}
+val subw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{subw@\verb`subw`}
+
+
+
+
+\label{val:X86-underscore64.subl}\begin{ocamldoccode}
+val subl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{subl@\verb`subl`}
+
+
+
+
+\label{val:X86-underscore64.subq}\begin{ocamldoccode}
+val subq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{subq@\verb`subq`}
+\begin{ocamldocdescription}
+{\tt{sub[ b | w | l | q ] a b}} subtrai o operando {\tt{a}} a {\tt{b}}. Resultado é guardado em {\tt{b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.imulw}\begin{ocamldoccode}
+val imulw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{imulw@\verb`imulw`}
+
+
+
+
+\label{val:X86-underscore64.imull}\begin{ocamldoccode}
+val imull : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{imull@\verb`imull`}
+
+
+
+
+\label{val:X86-underscore64.imulq}\begin{ocamldoccode}
+val imulq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{imulq@\verb`imulq`}
+\begin{ocamldocdescription}
+{\tt{imu[ w | l | q ] a b }} subtrai o operando {\tt{a}} a {\tt{b}}. Resultado é guardado em {\tt{b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.idivq}\begin{ocamldoccode}
+val idivq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{idivq@\verb`idivq`}
+\begin{ocamldocdescription}
+{\tt{idiv[ w | l | q ] a b}} divisão com sinal de {\tt{\%rdx::\%rax}} por {\tt{a}}. Quociente é guardado em {\tt{\%rax}} e resto em {\tt{\%rdx}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.cqto}\begin{ocamldoccode}
+val cqto : text
+\end{ocamldoccode}
+\index{cqto@\verb`cqto`}
+
+
+
+
+\subsection{Operações lógicas }
+
+
+
+
+Operações de processamento de bits. "e" *bitwise*, "ou" *bitwise*, "not" *bitwise* e "xor" *bitwise*.
+
+
+
+\label{val:X86-underscore64.notb}\begin{ocamldoccode}
+val notb : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{notb@\verb`notb`}
+
+
+
+
+\label{val:X86-underscore64.notw}\begin{ocamldoccode}
+val notw : [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{notw@\verb`notw`}
+
+
+
+
+\label{val:X86-underscore64.notl}\begin{ocamldoccode}
+val notl : [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{notl@\verb`notl`}
+
+
+
+
+\label{val:X86-underscore64.notq}\begin{ocamldoccode}
+val notq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{notq@\verb`notq`}
+\begin{ocamldocdescription}
+{\tt{not[ b | w | l | q ] a}} negação binária de {\tt{a}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.andb}\begin{ocamldoccode}
+val andb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{andb@\verb`andb`}
+
+
+
+
+\label{val:X86-underscore64.andw}\begin{ocamldoccode}
+val andw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{andw@\verb`andw`}
+
+
+
+
+\label{val:X86-underscore64.andl}\begin{ocamldoccode}
+val andl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{andl@\verb`andl`}
+
+
+
+
+\label{val:X86-underscore64.andq}\begin{ocamldoccode}
+val andq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{andq@\verb`andq`}
+\begin{ocamldocdescription}
+{\tt{and[ b | w | l | q ] a b}} $\rightarrow$ {\tt{a \& b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.orb}\begin{ocamldoccode}
+val orb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{orb@\verb`orb`}
+
+
+
+
+\label{val:X86-underscore64.orw}\begin{ocamldoccode}
+val orw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{orw@\verb`orw`}
+
+
+
+
+\label{val:X86-underscore64.orl}\begin{ocamldoccode}
+val orl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{orl@\verb`orl`}
+
+
+
+
+\label{val:X86-underscore64.orq}\begin{ocamldoccode}
+val orq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{orq@\verb`orq`}
+\begin{ocamldocdescription}
+{\tt{ou[ b | w | l | q ] a b}} $\rightarrow$ {\tt{a | b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.xorb}\begin{ocamldoccode}
+val xorb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{xorb@\verb`xorb`}
+
+
+
+
+\label{val:X86-underscore64.xorw}\begin{ocamldoccode}
+val xorw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{xorw@\verb`xorw`}
+
+
+
+
+\label{val:X86-underscore64.xorl}\begin{ocamldoccode}
+val xorl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{xorl@\verb`xorl`}
+
+
+
+
+\label{val:X86-underscore64.xorq}\begin{ocamldoccode}
+val xorq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{xorq@\verb`xorq`}
+\begin{ocamldocdescription}
+{\tt{xor[ b | w | l |  q] a b}} $\rightarrow$ {\tt{a xor b}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{*Shifts* }
+
+
+
+
+\label{val:X86-underscore64.shlb}\begin{ocamldoccode}
+val shlb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{shlb@\verb`shlb`}
+
+
+
+
+\label{val:X86-underscore64.shlw}\begin{ocamldoccode}
+val shlw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{shlw@\verb`shlw`}
+
+
+
+
+\label{val:X86-underscore64.shll}\begin{ocamldoccode}
+val shll : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{shll@\verb`shll`}
+
+
+
+
+\label{val:X86-underscore64.shlq}\begin{ocamldoccode}
+val shlq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{shlq@\verb`shlq`}
+
+
+
+
+nota: shl é idêntico a sal.
+
+
+
+\label{val:X86-underscore64.shrb}\begin{ocamldoccode}
+val shrb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{shrb@\verb`shrb`}
+
+
+
+
+\label{val:X86-underscore64.shrw}\begin{ocamldoccode}
+val shrw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{shrw@\verb`shrw`}
+
+
+
+
+\label{val:X86-underscore64.shrl}\begin{ocamldoccode}
+val shrl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{shrl@\verb`shrl`}
+
+
+
+
+\label{val:X86-underscore64.shrq}\begin{ocamldoccode}
+val shrq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{shrq@\verb`shrq`}
+
+
+
+
+\label{val:X86-underscore64.sarb}\begin{ocamldoccode}
+val sarb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{sarb@\verb`sarb`}
+
+
+
+
+\label{val:X86-underscore64.sarw}\begin{ocamldoccode}
+val sarw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{sarw@\verb`sarw`}
+
+
+
+
+\label{val:X86-underscore64.sarl}\begin{ocamldoccode}
+val sarl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{sarl@\verb`sarl`}
+
+
+
+
+\label{val:X86-underscore64.sarq}\begin{ocamldoccode}
+val sarq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{sarq@\verb`sarq`}
+
+
+
+
+\subsection{Saltos }
+
+
+
+
+\label{val:X86-underscore64.call}\begin{ocamldoccode}
+val call : label -> text
+\end{ocamldoccode}
+\index{call@\verb`call`}
+
+
+
+
+\label{val:X86-underscore64.call-underscorestar}\begin{ocamldoccode}
+val call_star : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{call-underscorestar@\verb`call_star`}
+
+
+
+
+\label{val:X86-underscore64.leave}\begin{ocamldoccode}
+val leave : text
+\end{ocamldoccode}
+\index{leave@\verb`leave`}
+
+
+
+
+\label{val:X86-underscore64.ret}\begin{ocamldoccode}
+val ret : text
+\end{ocamldoccode}
+\index{ret@\verb`ret`}
+\begin{ocamldocdescription}
+Chamada de função e retorno.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jmp}\begin{ocamldoccode}
+val jmp : label -> text
+\end{ocamldoccode}
+\index{jmp@\verb`jmp`}
+\begin{ocamldocdescription}
+{\tt{jmp (z: label)}} salto incondicional para a *label* {\tt{z}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jmp-underscorestar}\begin{ocamldoccode}
+val jmp_star : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{jmp-underscorestar@\verb`jmp_star`}
+\begin{ocamldocdescription}
+{\tt{jmp\_star o}} salto para um endereço calculado {\tt{o}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.je}\begin{ocamldoccode}
+val je : label -> text
+\end{ocamldoccode}
+\index{je@\verb`je`}
+\begin{ocamldocdescription}
+$=$  0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jz}\begin{ocamldoccode}
+val jz : label -> text
+\end{ocamldoccode}
+\index{jz@\verb`jz`}
+\begin{ocamldocdescription}
+$=$  0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jne}\begin{ocamldoccode}
+val jne : label -> text
+\end{ocamldoccode}
+\index{jne@\verb`jne`}
+\begin{ocamldocdescription}
+$<$$>$ 0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jnz}\begin{ocamldoccode}
+val jnz : label -> text
+\end{ocamldoccode}
+\index{jnz@\verb`jnz`}
+\begin{ocamldocdescription}
+$<$$>$ 0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.js}\begin{ocamldoccode}
+val js : label -> text
+\end{ocamldoccode}
+\index{js@\verb`js`}
+\begin{ocamldocdescription}
+$<$  0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jns}\begin{ocamldoccode}
+val jns : label -> text
+\end{ocamldoccode}
+\index{jns@\verb`jns`}
+\begin{ocamldocdescription}
+$\geq$ 0
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jg}\begin{ocamldoccode}
+val jg : label -> text
+\end{ocamldoccode}
+\index{jg@\verb`jg`}
+\begin{ocamldocdescription}
+$>$   com sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jge}\begin{ocamldoccode}
+val jge : label -> text
+\end{ocamldoccode}
+\index{jge@\verb`jge`}
+\begin{ocamldocdescription}
+$\geq$  com sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jl}\begin{ocamldoccode}
+val jl : label -> text
+\end{ocamldoccode}
+\index{jl@\verb`jl`}
+\begin{ocamldocdescription}
+$<$   com sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jle}\begin{ocamldoccode}
+val jle : label -> text
+\end{ocamldoccode}
+\index{jle@\verb`jle`}
+\begin{ocamldocdescription}
+$\leq$  com sinaç
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.ja}\begin{ocamldoccode}
+val ja : label -> text
+\end{ocamldoccode}
+\index{ja@\verb`ja`}
+\begin{ocamldocdescription}
+$>$   sem sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jae}\begin{ocamldoccode}
+val jae : label -> text
+\end{ocamldoccode}
+\index{jae@\verb`jae`}
+\begin{ocamldocdescription}
+$\geq$  sem sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jb}\begin{ocamldoccode}
+val jb : label -> text
+\end{ocamldoccode}
+\index{jb@\verb`jb`}
+\begin{ocamldocdescription}
+$<$   sem sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.jbe}\begin{ocamldoccode}
+val jbe : label -> text
+\end{ocamldoccode}
+\index{jbe@\verb`jbe`}
+\begin{ocamldocdescription}
+$\leq$  sem sinal
+
+
+\end{ocamldocdescription}
+
+
+
+
+saltos condicionais
+
+
+
+\subsection{Condições }
+
+
+
+
+\label{val:X86-underscore64.cmpb}\begin{ocamldoccode}
+val cmpb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{cmpb@\verb`cmpb`}
+
+
+
+
+\label{val:X86-underscore64.cmpw}\begin{ocamldoccode}
+val cmpw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{cmpw@\verb`cmpw`}
+
+
+
+
+\label{val:X86-underscore64.cmpl}\begin{ocamldoccode}
+val cmpl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{cmpl@\verb`cmpl`}
+
+
+
+
+\label{val:X86-underscore64.cmpq}\begin{ocamldoccode}
+val cmpq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{cmpq@\verb`cmpq`}
+
+
+
+
+\label{val:X86-underscore64.testb}\begin{ocamldoccode}
+val testb : [ {\textasciigrave}B ] operand -> [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{testb@\verb`testb`}
+
+
+
+
+\label{val:X86-underscore64.testw}\begin{ocamldoccode}
+val testw : [ {\textasciigrave}W ] operand -> [ {\textasciigrave}W ] operand -> text
+\end{ocamldoccode}
+\index{testw@\verb`testw`}
+
+
+
+
+\label{val:X86-underscore64.testl}\begin{ocamldoccode}
+val testl : [ {\textasciigrave}L ] operand -> [ {\textasciigrave}L ] operand -> text
+\end{ocamldoccode}
+\index{testl@\verb`testl`}
+
+
+
+
+\label{val:X86-underscore64.testq}\begin{ocamldoccode}
+val testq : [ {\textasciigrave}Q ] operand -> [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{testq@\verb`testq`}
+
+
+
+
+\label{val:X86-underscore64.sete}\begin{ocamldoccode}
+val sete : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{sete@\verb`sete`}
+
+
+
+
+\label{val:X86-underscore64.setne}\begin{ocamldoccode}
+val setne : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setne@\verb`setne`}
+
+
+
+
+\label{val:X86-underscore64.sets}\begin{ocamldoccode}
+val sets : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{sets@\verb`sets`}
+
+
+
+
+\label{val:X86-underscore64.setns}\begin{ocamldoccode}
+val setns : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setns@\verb`setns`}
+
+
+
+
+\label{val:X86-underscore64.setg}\begin{ocamldoccode}
+val setg : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setg@\verb`setg`}
+
+
+
+
+\label{val:X86-underscore64.setge}\begin{ocamldoccode}
+val setge : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setge@\verb`setge`}
+
+
+
+
+\label{val:X86-underscore64.setl}\begin{ocamldoccode}
+val setl : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setl@\verb`setl`}
+
+
+
+
+\label{val:X86-underscore64.setle}\begin{ocamldoccode}
+val setle : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setle@\verb`setle`}
+
+
+
+
+\label{val:X86-underscore64.seta}\begin{ocamldoccode}
+val seta : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{seta@\verb`seta`}
+
+
+
+
+\label{val:X86-underscore64.setae}\begin{ocamldoccode}
+val setae : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setae@\verb`setae`}
+
+
+
+
+\label{val:X86-underscore64.setb}\begin{ocamldoccode}
+val setb : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setb@\verb`setb`}
+
+
+
+
+\label{val:X86-underscore64.setbe}\begin{ocamldoccode}
+val setbe : [ {\textasciigrave}B ] operand -> text
+\end{ocamldoccode}
+\index{setbe@\verb`setbe`}
+
+
+
+
+Posiciona o byte operanda em 1 ou 0 conforme o teste retornar verdade ou não.
+
+
+
+\subsection{Gestão da pilha}
+
+
+
+
+\label{val:X86-underscore64.pushq}\begin{ocamldoccode}
+val pushq : [ {\textasciigrave}Q ] operand -> text
+\end{ocamldoccode}
+\index{pushq@\verb`pushq`}
+\begin{ocamldocdescription}
+{\tt{pushq r}} coloca o conteúdo de {\tt{r}} no topo da pilha.
+      Lembrete : \%rsp aponta para o endereço da última célula ocupada.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.popq}\begin{ocamldoccode}
+val popq : [ {\textasciigrave}Q ] register -> text
+\end{ocamldoccode}
+\index{popq@\verb`popq`}
+\begin{ocamldocdescription}
+{\tt{popq r}} coloca a palavra presente no topo da pilha em {\tt{r}} e desempilha.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Diversos }
+
+
+
+
+\label{val:X86-underscore64.label}\begin{ocamldoccode}
+val label : label -> [>  ] asm
+\end{ocamldoccode}
+\index{label@\verb`label`}
+\begin{ocamldocdescription}
+Uma etiqueta. Pode ser encontrada em text ou em data
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.globl}\begin{ocamldoccode}
+val globl : label -> [>  ] asm
+\end{ocamldoccode}
+\index{globl@\verb`globl`}
+\begin{ocamldocdescription}
+Declaração .globl (para main, tipicamente)
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.comment}\begin{ocamldoccode}
+val comment : string -> [>  ] asm
+\end{ocamldoccode}
+\index{comment@\verb`comment`}
+\begin{ocamldocdescription}
+Coloca um comentário no código gerado. Pode ser encontrada em text ou em data.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Dados }
+
+
+
+
+\label{val:X86-underscore64.string}\begin{ocamldoccode}
+val string : string -> data
+\end{ocamldoccode}
+\index{string@\verb`string`}
+\begin{ocamldocdescription}
+Constante string  (que termina com um 0).
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.dbyte}\begin{ocamldoccode}
+val dbyte : int list -> data
+\end{ocamldoccode}
+\index{dbyte@\verb`dbyte`}
+
+
+
+
+\label{val:X86-underscore64.dword}\begin{ocamldoccode}
+val dword : int list -> data
+\end{ocamldoccode}
+\index{dword@\verb`dword`}
+
+
+
+
+\label{val:X86-underscore64.dint}\begin{ocamldoccode}
+val dint : int list -> data
+\end{ocamldoccode}
+\index{dint@\verb`dint`}
+
+
+
+
+\label{val:X86-underscore64.dquad}\begin{ocamldoccode}
+val dquad : int list -> data
+\end{ocamldoccode}
+\index{dquad@\verb`dquad`}
+\begin{ocamldocdescription}
+Coloca uma lista de valores em  1/2/4/8 bytes na zona data.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.address}\begin{ocamldoccode}
+val address : label list -> data
+\end{ocamldoccode}
+\index{address@\verb`address`}
+\begin{ocamldocdescription}
+Coloca uma lista de endereços na zona data (com .quad).
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:X86-underscore64.space}\begin{ocamldoccode}
+val space : int -> data
+\end{ocamldoccode}
+\index{space@\verb`space`}
+\begin{ocamldocdescription}
+{\tt{space n}} aloca {\tt{n}} bytes (com valor 0) no segmento dos dados.
+
+
+\end{ocamldocdescription}
+
+
+\end{document}

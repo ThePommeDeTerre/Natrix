@@ -59,7 +59,7 @@ let () =
     with 
     | Lexer.Lexing_error c -> 
       localisation (Lexing.lexeme_start_p buf) inFile;
-      print_endline ("Erro na análise lexica: ");
+      print_endline ("Lexical error");
       exit 1
 
     | Parser.Error -> 
@@ -67,7 +67,7 @@ let () =
       print_endline "Syntax error";
       exit 1
 
-    | RaiseError s -> 
+    | Error s -> 
       (* localisation (Lexing.lexeme_start_p buf) inFile; *)
       print_endline s;
       exit 1

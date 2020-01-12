@@ -59,7 +59,7 @@ let rec stmt env = function
         in for i = v1 to v2 do
           List.iter (fun s -> intpr_stmt i s) stmts
         done
-      | _ -> error "todo" 
+      | _, _ -> typeError Tint Tbool
       
 and expr env = function
   | Econst (Cint i) -> Vint i

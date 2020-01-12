@@ -1,5 +1,9 @@
 %{
   open Ast
+
+  let maxint = Int32.max_int
+  let minint = min_int
+
 %}
 
 %token <Ast.constant> CONST
@@ -11,7 +15,7 @@
 %token SLB SRB
 */
 
-%token IF THEN ELSE PRINTINT PRINTBOOL LET IN VAR DO RANGE FOR
+%token IF THEN ELSE PRINTINT PRINTBOOL LET IN VAR DO RANGE FOR MAXINT MININT
 %token SET EQ SCOL COL NOT AND OR 
 %token PLUS MINUS DIV MUL MOD
 %token INT BOOL
