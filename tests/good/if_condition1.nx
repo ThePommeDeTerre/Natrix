@@ -6,6 +6,6 @@ var y : int = -1;
 if (x > 0) then {print(x);}
            else {print(y);}
 
-print(y);
+print_int(y);
 
 // Resultado: 1
