@@ -1,7 +1,0 @@
-// verificar se um array esta bem declarado
-
-type ar = array 10 of int filled by 1;
-
-print(a[5]);
-
-// Resultado: 1
